@@ -1,0 +1,2 @@
+declare type __ReturnType<B, F: (...any) => Promise<B> | B> = B
+declare type $ReturnType<F> = __ReturnType<*, F>

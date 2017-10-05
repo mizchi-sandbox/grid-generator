@@ -1,0 +1,9 @@
+{
+  "presets": ["flow", "react", ["env", { "targets": { "chrome": 61 } }]],
+  "plugins": ["transform-object-rest-spread"],
+  "env": {
+    "test": {
+      "presets": ["flow", "react", ["env", { "targets": { "node": "8.5" } }]]
+    }
+  }
+}

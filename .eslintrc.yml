@@ -1,0 +1,30 @@
+parser: 'babel-eslint'
+plugins:
+  - react
+  - prettier
+  - flowtype
+  - standard
+extends:
+  - standard
+  - plugin:react/recommended
+  - plugin:flowtype/recommended
+  - plugin:import/errors
+  - prettier
+  - prettier/flowtype
+  - prettier/react
+rules:
+  prettier/prettier:
+    - 2
+    -
+      trailingComma: none
+      singleQuote: true
+      semi: false
+  no-empty-pattern: 0
+  prefer-const: 2
+  prefer-arrow-callback: 2
+  react/jsx-uses-vars: 2
+  no-unused-vars:
+    - 2
+    -
+      argsIgnorePattern: ^_
+      varsIgnorePattern: ^_
