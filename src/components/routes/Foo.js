@@ -1,10 +1,10 @@
 /* @flow */
 import React from 'react'
 import { connect } from 'react-redux'
-import type { State as RootState } from '../reducers'
-import type { State, Action } from '../reducers/foo'
-import type { Dispatch } from '../types'
-import Label from './atoms/Label'
+import type { State as RootState } from '../../reducers'
+import type { State, Action } from '../../reducers/foo'
+import type { Dispatch } from '../../types'
+import Label from '../atoms/Label'
 
 export type Props = State & {
   dispatch: Dispatch<Action>

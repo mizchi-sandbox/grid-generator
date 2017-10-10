@@ -1,9 +1,9 @@
 /* @flow */
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
-import Foo from './Foo'
-import Bar from './Bar'
-import Home from './Home'
+import Foo from './routes/Foo'
+import Bar from './routes/Bar'
+import Home from './routes/Home'
 import Header from './molecules/Header'
 
 export default function Routes() {
