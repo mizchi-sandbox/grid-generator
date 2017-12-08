@@ -29,7 +29,6 @@
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-loadable": "^5.1.0",
-    "react-polyfill": "^0.0.2",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^4.0.8",
