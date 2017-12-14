@@ -3,6 +3,7 @@ import React, { Fragment } from 'react'
 import uuid from 'uuid'
 import range from 'lodash.range'
 import uniq from 'lodash.uniq'
+import flatten from 'lodash.flatten'
 import chunk from 'lodash.chunk'
 import CellC from '../atoms/Cell'
 
@@ -16,13 +17,23 @@ type State = {
   columnCount: number
 }
 
+let cnt = 1
+
 const fillEmptyCells = (cells: Cell[], x: number, y: number) => {
   const size = x * y - cells.length
   const addingCells = range(size).map(i => ({
-    name: 'g' + (cells.length + i).toString(),
+    name: 'g' + (++cnt).toString(),
     id: uuid()
   }))
   return cells.concat(addingCells)
+}
+
+const deleteRow = (cells: Cell[], x: number, y: number) => {
+  return cells.slice(0, (x - 1) * y)
+}
+
+const deleteColumn = (cells: Cell[], x: number, y: number) => {
+  return flatten(chunk(cells, y).map(c => c.slice(0, c.length - 1)))
 }
 
 const cellsToAreas = (cells: Cell[], columnCount: number) => {
@@ -66,12 +77,32 @@ export default class Home extends React.Component<void, State> {
     }))
   }
 
+  deleteRow() {
+    const { rows, rowCount, columnCount, cells } = this.state
+    this.setState(state => ({
+      ...state,
+      rowCount: rowCount - 1,
+      rows: rows.slice(0, rows.length - 1),
+      cells: deleteRow(cells, rowCount, columnCount)
+    }))
+  }
+
   addColumn() {
     this.setState(state => ({
       ...state,
       columnCount: state.columnCount + 1,
       columns: state.columns.concat(['1fr']),
       cells: fillEmptyCells(state.cells, state.rowCount, state.columnCount + 1)
+    }))
+  }
+
+  deleteColumn() {
+    const { columns, columnCount, rowCount, cells } = this.state
+    this.setState(state => ({
+      ...state,
+      columnCount: columnCount - 1,
+      columns: columns.slice(0, columns.length - 1),
+      cells: deleteColumn(cells, rowCount, columnCount)
     }))
   }
   componentDidUpdate() {
@@ -152,10 +183,14 @@ export default class Home extends React.Component<void, State> {
               </div>
             </div>
             <div style={{ gridArea: 'addr' }}>
-              <button onClick={this.addRow.bind(this)}>+Row</button>
+              <button onClick={this.addRow.bind(this)}>+</button>
+              /
+              <button onClick={this.deleteRow.bind(this)}>-</button>
             </div>
             <div style={{ gridArea: 'addc' }}>
-              <button onClick={this.addColumn.bind(this)}>+Column</button>
+              <button onClick={this.addColumn.bind(this)}>+</button>
+              /
+              <button onClick={this.deleteColumn.bind(this)}>-</button>
             </div>
             <div style={{ gridArea: 'rows' }}>
               <div
