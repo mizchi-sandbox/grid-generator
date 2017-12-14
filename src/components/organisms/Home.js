@@ -8,9 +8,15 @@ import chunk from 'lodash.chunk'
 import Pane from '../atoms/Pane'
 import paramCase from 'param-case'
 
+const VERSION = '1'
+const LAST_SAVE_VERSION = 'last-save-version'
+const STATE = 'state'
+
 type Cell = { name: string }
 
 type State = {
+  width: string,
+  height: string,
   columns: Array<string | number>,
   rows: Array<string | number>,
   rowCount: number,
@@ -24,7 +30,7 @@ let cnt = 0
 
 const fillEmptyCells = (cells: Cell[], x: number, y: number) => {
   const size = x * y - cells.length
-  const addingCells = range(size).map(i => ({
+  const addingCells = range(size).map(_ => ({
     name: 'g' + (++cnt).toString(),
     id: uuid()
   }))
@@ -46,18 +52,20 @@ const cellsToAreas = (cells: Cell[], columnCount: number) => {
     .join(' ')
 }
 
+const initialState = {
+  width: '640px',
+  height: '480px',
+  columns: ['1fr'],
+  rows: ['1fr'],
+  rowCount: 1,
+  columnCount: 1,
+  cells: [{ name: 'g0', id: uuid() }],
+  selectedPaneId: null,
+  outputMode: 'css'
+}
+
 export default class Home extends React.Component<void, State> {
-  state = {
-    width: '800px',
-    height: '600px',
-    columns: ['1fr'],
-    rows: ['1fr'],
-    rowCount: 1,
-    columnCount: 1,
-    cells: [{ name: 'g0', id: uuid() }],
-    selectedPaneId: null,
-    outputMode: 'css'
-  }
+  state = initialState
 
   updateCellName(id: number, name: string) {
     this.setState(state => {
@@ -85,6 +93,9 @@ export default class Home extends React.Component<void, State> {
 
   deleteRow() {
     const { rows, rowCount, columnCount, cells } = this.state
+    if (rowCount === 1) {
+      return
+    }
     this.setState(state => ({
       ...state,
       rowCount: rowCount - 1,
@@ -104,6 +115,9 @@ export default class Home extends React.Component<void, State> {
 
   deleteColumn() {
     const { columns, columnCount, rowCount, cells } = this.state
+    if (columnCount === 1) {
+      return
+    }
     this.setState(state => ({
       ...state,
       columnCount: columnCount - 1,
@@ -126,8 +140,25 @@ export default class Home extends React.Component<void, State> {
     }))
   }
 
+  componentDidMount() {
+    const lastSaveVersion = window.localStorage.getItem(LAST_SAVE_VERSION)
+
+    if (VERSION !== lastSaveVersion) {
+      window.localStorage.clear()
+      return
+    }
+
+    const lastState = window.localStorage.getItem(STATE)
+    if (lastState) {
+      this.setState(JSON.parse(lastState))
+      console.log('loaded last state')
+    }
+  }
+
   componentDidUpdate() {
-    console.log(this.state.cells)
+    window.localStorage.setItem(STATE, JSON.stringify(this.state))
+    window.localStorage.setItem(LAST_SAVE_VERSION, VERSION)
+    console.log('saved')
   }
 
   render() {
@@ -155,14 +186,14 @@ export default class Home extends React.Component<void, State> {
       '\n}'
     return (
       <Fragment>
-        <div style={{ width: this.state.width, height: this.state.height }}>
+        <div style={{ width: '100%', height: '100%' }}>
           <div
             style={{
               width: '100%',
               height: '100%',
               display: 'grid',
               gridTemplateColumns: `
-                60px 1fr 60px
+                60px ${this.state.width} 60px
               `,
               gridTemplateRows: `
                 30px
@@ -259,6 +290,16 @@ export default class Home extends React.Component<void, State> {
             </div>
             <div style={{ gridArea: 'menu' }}>
               <div>
+                <button
+                  onClick={ev => {
+                    window.localStorage.clear()
+                    this.setState(initialState)
+                  }}
+                >
+                  RESET
+                </button>
+              </div>
+              <div>
                 width:
                 <input
                   value={this.state.width}
@@ -273,7 +314,14 @@ export default class Home extends React.Component<void, State> {
                 />
               </div>
             </div>
-            <div style={{ gridArea: 'table' }}>
+            <div
+              style={{
+                gridArea: 'table',
+
+                width: this.state.width,
+                height: this.state.height
+              }}
+            >
               <div style={containerStyle}>
                 {gridNames.map((gridName, index) => {
                   const includedCells = cells.filter(
