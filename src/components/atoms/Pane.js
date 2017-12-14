@@ -2,9 +2,10 @@
 import * as React from 'react'
 
 type Props = {
-  cell: { name: string },
+  cells: { name: string, id: string }[],
   gridName: string,
-  onSet: Function
+  onSet: Function,
+  onClickBreak: Function
 }
 
 type State = {
@@ -12,7 +13,7 @@ type State = {
   editingValue: ?string
 }
 
-export default class CellC extends React.Component<Props, State> {
+export default class Pane extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
@@ -22,13 +23,20 @@ export default class CellC extends React.Component<Props, State> {
   }
 
   render() {
-    const { onSet, gridName } = this.props
+    const { onSet, gridName, onClickBreak, cells } = this.props
     const { editing, editingValue } = this.state
 
     const cellStyle = {
       gridArea: gridName,
-      outline: '1px solid black'
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      boxSizing: 'borderBox',
+      outline: '1px dashed black'
     }
+
     return (
       <div style={cellStyle}>
         {editing ? (
@@ -50,17 +58,24 @@ export default class CellC extends React.Component<Props, State> {
             }}
           />
         ) : (
-          <span
-            onDoubleClick={() => {
-              this.setState(state => ({
-                ...state,
-                editing: true,
-                editingValue: gridName
-              }))
-            }}
-          >
-            {gridName}
-          </span>
+          <React.Fragment>
+            <span
+              onClick={() => {
+                this.setState(state => ({
+                  ...state,
+                  editing: true,
+                  editingValue: gridName
+                }))
+              }}
+            >
+              {gridName}
+            </span>
+            {cells.length > 1 && (
+              <div>
+                <button onClick={() => onClickBreak()}>break</button>
+              </div>
+            )}
+          </React.Fragment>
         )}
       </div>
     )

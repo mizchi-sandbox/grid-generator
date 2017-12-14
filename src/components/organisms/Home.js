@@ -5,7 +5,8 @@ import range from 'lodash.range'
 import uniq from 'lodash.uniq'
 import flatten from 'lodash.flatten'
 import chunk from 'lodash.chunk'
-import CellC from '../atoms/Cell'
+import Pane from '../atoms/Pane'
+import paramCase from 'param-case'
 
 type Cell = { name: string }
 
@@ -17,7 +18,7 @@ type State = {
   columnCount: number
 }
 
-let cnt = 1
+let cnt = 0
 
 const fillEmptyCells = (cells: Cell[], x: number, y: number) => {
   const size = x * y - cells.length
@@ -105,6 +106,21 @@ export default class Home extends React.Component<void, State> {
       cells: deleteColumn(cells, rowCount, columnCount)
     }))
   }
+
+  breakPanes(name: string) {
+    const { cells } = this.state
+    this.setState(state => ({
+      ...state,
+      cells: cells.map(cell => {
+        if (cell.name === name) {
+          return { ...cell, name: 'g' + ++cnt }
+        } else {
+          return cell
+        }
+      })
+    }))
+  }
+
   componentDidUpdate() {
     console.log(this.state.cells)
   }
@@ -122,6 +138,16 @@ export default class Home extends React.Component<void, State> {
     const { cells, columns, rows } = this.state
     const gridNames = uniq(cells.map(c => c.name))
     const assign: any = Object.assign
+
+    const cssString =
+      '.container {\n' +
+      Object.keys(containerStyle)
+        .map(key => {
+          const value = containerStyle[key]
+          return `  ${paramCase(key)}: ${value};`
+        })
+        .join('\n') +
+      '\n}'
     return (
       <Fragment>
         <div style={{ width: '800px', height: '600px' }}>
@@ -230,23 +256,35 @@ export default class Home extends React.Component<void, State> {
             <div style={{ gridArea: 'table' }}>
               <div style={containerStyle}>
                 {gridNames.map((gridName, index) => {
-                  const cell = cells.find(cell => cell.name === gridName)
+                  const includedCells = cells.filter(
+                    cell => cell.name === gridName
+                  )
+                  const { id, name } = includedCells[0]
                   return (
-                    cell && (
-                      <CellC
-                        key={index}
-                        gridName={gridName}
-                        cell={cell}
-                        onSet={value => this.updateCellName(cell.id, value)}
-                      />
-                    )
+                    <Pane
+                      key={index}
+                      gridName={gridName}
+                      cells={includedCells}
+                      onSet={value => this.updateCellName(id, value)}
+                      onClickBreak={() => {
+                        this.breakPanes(name)
+                      }}
+                    />
                   )
                 })}
               </div>
             </div>
           </div>
         </div>
-        <pre>style: {JSON.stringify(containerStyle, null, 2)}</pre>
+        <hr />
+        <h3>React Style Object</h3>
+        <pre>const style = {JSON.stringify(containerStyle, null, 2)}</pre>
+        <hr />
+        <h3>CSS</h3>
+        <pre> {cssString} </pre>
+        <hr />
+        <h3>Grid Generator Inner Expression</h3>
+        <pre> {JSON.stringify(this.state, null, 2)} </pre>
       </Fragment>
     )
   }

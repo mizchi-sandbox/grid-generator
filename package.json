@@ -31,6 +31,7 @@
     "lodash.flatten": "^4.4.0",
     "lodash.range": "^3.2.0",
     "lodash.uniq": "^4.5.0",
+    "param-case": "^2.1.1",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-loadable": "^5.1.0",
