@@ -7,11 +7,7 @@ export type Props = {}
 export default function Header({  }: Props) {
   return (
     <header>
-      <Link to="/">Home</Link>
-      |
-      <Link to="/foo">Foo</Link>
-      |
-      <Link to="/bar">Bar</Link>
+      <Link to="/">Grid Layout Generator</Link>
       <hr />
     </header>
   )
