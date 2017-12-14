@@ -15,7 +15,9 @@ type State = {
   rows: Array<string | number>,
   rowCount: number,
   cells: Array<Cell>,
-  columnCount: number
+  columnCount: number,
+  selectedPaneId: ?string,
+  outputMode: 'css' | 'react' | 'internal'
 }
 
 let cnt = 0
@@ -46,20 +48,23 @@ const cellsToAreas = (cells: Cell[], columnCount: number) => {
 
 export default class Home extends React.Component<void, State> {
   state = {
+    width: '800px',
+    height: '600px',
     columns: ['1fr'],
     rows: ['1fr'],
     rowCount: 1,
     columnCount: 1,
-    cells: [{ name: 'g0', id: uuid() }]
+    cells: [{ name: 'g0', id: uuid() }],
+    selectedPaneId: null,
+    outputMode: 'css'
   }
 
   updateCellName(id: number, name: string) {
     this.setState(state => {
       return {
         ...state,
-        cells: state.cells.map((cell, index) => {
+        cells: state.cells.map(cell => {
           if (cell.id === id) {
-            console.log('update', index, index)
             return { ...cell, name }
           } else {
             return cell
@@ -150,7 +155,7 @@ export default class Home extends React.Component<void, State> {
       '\n}'
     return (
       <Fragment>
-        <div style={{ width: '800px', height: '600px' }}>
+        <div style={{ width: this.state.width, height: this.state.height }}>
           <div
             style={{
               width: '100%',
@@ -252,7 +257,22 @@ export default class Home extends React.Component<void, State> {
                 })}
               </div>
             </div>
-            <div style={{ gridArea: 'menu' }}>menu</div>
+            <div style={{ gridArea: 'menu' }}>
+              <div>
+                width:
+                <input
+                  value={this.state.width}
+                  onChange={ev => this.setState({ width: ev.target.value })}
+                />
+              </div>
+              <div>
+                height:
+                <input
+                  value={this.state.height}
+                  onChange={ev => this.setState({ height: ev.target.value })}
+                />
+              </div>
+            </div>
             <div style={{ gridArea: 'table' }}>
               <div style={containerStyle}>
                 {gridNames.map((gridName, index) => {
@@ -277,14 +297,36 @@ export default class Home extends React.Component<void, State> {
           </div>
         </div>
         <hr />
-        <h3>React Style Object</h3>
-        <pre>const style = {JSON.stringify(containerStyle, null, 2)}</pre>
-        <hr />
-        <h3>CSS</h3>
-        <pre> {cssString} </pre>
-        <hr />
-        <h3>Grid Generator Inner Expression</h3>
-        <pre> {JSON.stringify(this.state, null, 2)} </pre>
+        <div>
+          OutputMode:
+          <button onClick={() => this.setState({ outputMode: 'react' })}>
+            React
+          </button>
+          <button onClick={() => this.setState({ outputMode: 'css' })}>
+            CSS
+          </button>
+          <button onClick={() => this.setState({ outputMode: 'internal' })}>
+            Internal
+          </button>
+        </div>
+        {this.state.outputMode === 'react' && (
+          <Fragment>
+            <h3>React Style Object</h3>
+            <pre>const style = {JSON.stringify(containerStyle, null, 2)}</pre>
+          </Fragment>
+        )}
+        {this.state.outputMode === 'css' && (
+          <Fragment>
+            <h3>CSS</h3>
+            <pre> {cssString} </pre>
+          </Fragment>
+        )}
+        {this.state.outputMode === 'internal' && (
+          <Fragment>
+            <h3>Grid Generator Inner Expression</h3>
+            <pre> {JSON.stringify(this.state, null, 2)} </pre>
+          </Fragment>
+        )}
       </Fragment>
     )
   }
