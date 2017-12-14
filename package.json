@@ -26,6 +26,9 @@
   "dependencies": {
     "axios": "^0.16.2",
     "babel-polyfill": "^6.26.0",
+    "lodash.chunk": "^4.2.0",
+    "lodash.range": "^3.2.0",
+    "lodash.uniq": "^4.5.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-loadable": "^5.1.0",
@@ -35,7 +38,8 @@
     "redux": "^3.7.2",
     "redux-logger": "^3.0.6",
     "redux-promise": "^0.5.3",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "@mizchi/ava-helper": "^0.1.2",
@@ -44,6 +48,7 @@
     "babel-eslint": "^8.0.1",
     "babel-loader": "^7.1.2",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "babel-preset-flow": "^6.23.0",
