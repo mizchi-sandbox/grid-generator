@@ -1,13 +1,15 @@
 {
-  "plugins": ["transform-object-rest-spread", "transform-class-properties"],
   "env": {
     "development": {
-      "presets": ["flow", "react", ["env", { "targets": { "chrome": 61 } }]]
+      "presets": ["flow", "react", ["env", { "targets": { "chrome": 61 } }]],
+      "plugins": ["transform-object-rest-spread", "transform-class-properties"]
     },
     "test": {
+      "plugins": ["transform-object-rest-spread", "transform-class-properties"],
       "presets": ["flow", "react", ["env", { "targets": { "node": "8.5" } }]]
     },
     "production": {
+      "plugins": ["transform-object-rest-spread", "transform-class-properties"],
       "presets": [
         "flow",
         "react",

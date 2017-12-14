@@ -10,6 +10,7 @@
     "watch": "webpack-dev-server --hot",
     "build:dev": "NODE_ENV=development webpack",
     "build": "NODE_ENV=production webpack",
+    "deploy": "yarn build && gh-pages -d public",
     "build:size": "NODE_ENV=production webpack --json | webpack-bundle-size-analyzer"
   },
   "ava": {
@@ -70,6 +71,7 @@
     "eslint-plugin-react": "^7.4.0",
     "eslint-plugin-standard": "^3.0.1",
     "flow-bin": "^0.60.1",
+    "gh-pages": "^1.1.0",
     "nyc": "^11.2.1",
     "prettier": "^1.7.3",
     "react-hot-loader": "^3.0.0-beta.7",
