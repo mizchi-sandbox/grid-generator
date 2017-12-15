@@ -1,8 +1,9 @@
 /* @flow */
+import type { Cell } from '../../domain/GridState'
 import * as React from 'react'
 
 type Props = {
-  cells: { name: string, id: string }[],
+  cells: Cell[],
   gridName: string,
   onSet: Function,
   onClickBreak: Function

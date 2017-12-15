@@ -1,23 +1,23 @@
 /* @flow */
+import type { GridState } from '../../domain/GridState'
 import React, { Fragment } from 'react'
 import paramCase from 'param-case'
 
 export default class Output extends React.Component<
   {
-    state: any,
-    containerStyle: any,
-    outputMode: any
+    gridState: GridState,
+    containerStyle: any
   },
   {
     outputMode: 'css' | 'react' | 'internal'
   }
 > {
   state = {
-    outputMode: 'css'
+    outputMode: 'internal'
   }
 
   render() {
-    const { state, containerStyle } = this.props
+    const { gridState, containerStyle } = this.props
     const { outputMode } = this.state
 
     const cssString =
@@ -58,7 +58,7 @@ export default class Output extends React.Component<
         {outputMode === 'internal' && (
           <Fragment>
             <h3>Grid Generator Internal Expression</h3>
-            <pre> {JSON.stringify(state, null, 2)} </pre>
+            <pre> {JSON.stringify(gridState, null, 2)} </pre>
           </Fragment>
         )}
       </Fragment>

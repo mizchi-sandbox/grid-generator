@@ -1,5 +1,5 @@
 /* @flow */
-import type { GridState } from '../../domain/GridState'
+import type { GridState, Cell } from '../../domain/GridState'
 import React, { Fragment } from 'react'
 import range from 'lodash.range'
 import uniq from 'lodash.uniq'
@@ -31,7 +31,7 @@ const initialState = {
   selectedPaneId: null
 }
 
-export default class Home extends React.Component<void, GridState> {
+export default class Home extends React.Component<{}, GridState> {
   state = initialState
 
   updateCellName(id: number, name: string) {
@@ -258,7 +258,7 @@ export default class Home extends React.Component<void, GridState> {
           </div>
         </div>
         <hr />
-        <Output state={this.state} containerStyle={containerStyle} />
+        <Output gridState={this.state} containerStyle={containerStyle} />
       </Fragment>
     )
   }
