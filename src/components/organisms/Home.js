@@ -17,13 +17,15 @@ import {
   breakPanes
 } from '../../domain/GridState'
 
-const assign: <T>([], T[], { [number]: T }) => T[] = (Object.assign: any)
+const assign = (Object.assign: any)
 
 const VERSION = '3'
 const LAST_SAVE_VERSION = 'last-save-version'
 const STATE = 'state'
 
 const initialState = {
+  previewWidth: '640px',
+  previewHeight: '480px',
   width: '640px',
   height: '480px',
   columns: ['1fr'],
@@ -76,63 +78,94 @@ export default class Home extends React.Component<{}, GridState> {
     return (
       <Fragment>
         <div style={{ width: '100%', height: '100%' }}>
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              display: 'grid',
-              gridTemplateColumns: `
-                60px ${width} 60px
-              `,
-              gridTemplateRows: `
-                30px
-                1fr
-                30px
-              `,
-              gridTemplateAreas: `
-              "_0   columns addc menu"
-              "rows table   _1   menu"
-              "addr _2      _3   menu"
+          <div style={{ display: 'flex', width: '100%', height: '100%' }}>
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'grid',
+                  gridTemplateColumns: `
+                    60px ${width} 50px
+                  `,
+                  gridTemplateRows: `
+                    30px
+                    1fr
+                    30px
+                  `,
+                  gridTemplateAreas: `
+              "_0   columns addc"
+              "rows table   _1"
+              "addr _2      _3"
             `
-            }}
-          >
-            <div style={{ gridArea: 'columns' }}>
-              <ColumnsEditor
-                columns={columns}
-                onChangeColumn={(index, value) => {
-                  this.setState({
-                    ...this.state,
-                    columns: assign([], columns, {
-                      [index]: value
-                    })
-                  })
                 }}
-              />
+              >
+                <div style={{ gridArea: 'columns' }}>
+                  <ColumnsEditor
+                    columns={columns}
+                    onChangeColumn={(index, value) => {
+                      this.setState({
+                        ...this.state,
+                        columns: assign([], columns, {
+                          [index]: value
+                        })
+                      })
+                    }}
+                  />
+                </div>
+                <div style={{ gridArea: 'rows' }}>
+                  <RowsEditor
+                    rows={rows}
+                    onChangeRow={(index, value) => {
+                      this.setState({
+                        ...this.state,
+                        rows: assign([], rows, {
+                          [index]: value
+                        })
+                      })
+                    }}
+                  />
+                </div>
+                <div style={{ gridArea: 'addr' }}>
+                  <button onClick={() => this.setState(addRow)}>+</button>
+                  <button onClick={() => this.setState(deleteRow)}>-</button>
+                </div>
+                <div style={{ gridArea: 'addc' }}>
+                  <button onClick={() => this.setState(addColumn)}>+</button>
+                  <button onClick={() => this.setState(deleteColumn)}>-</button>
+                </div>
+                <div
+                  style={{
+                    gridArea: 'table',
+                    width,
+                    height
+                  }}
+                >
+                  <div style={containerStyle}>
+                    {gridAreas.map((gridArea, index) => {
+                      const includedCells = cells.filter(
+                        cell => cell.gridArea === gridArea
+                      )
+                      const { id } = includedCells[0]
+                      return (
+                        <PaneEditor
+                          key={index}
+                          gridArea={gridArea}
+                          cells={includedCells}
+                          onSet={value =>
+                            this.setState(s => updateCellName(s, id, value))
+                          }
+                          onClickBreak={() => {
+                            this.setState(s => breakPanes(s, gridArea))
+                          }}
+                        />
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div style={{ gridArea: 'rows' }}>
-              <RowsEditor
-                rows={rows}
-                onChangeRow={(index, value) => {
-                  this.setState({
-                    ...this.state,
-                    rows: assign([], rows, {
-                      [index]: value
-                    })
-                  })
-                }}
-              />
-            </div>
-            <div style={{ gridArea: 'addr' }}>
-              <button onClick={() => this.setState(addRow)}>+</button>
-              /
-              <button onClick={() => this.setState(deleteRow)}>-</button>
-            </div>
-            <div style={{ gridArea: 'addc' }}>
-              <button onClick={() => this.setState(addColumn)}>+</button>
-              /
-              <button onClick={() => this.setState(deleteColumn)}>-</button>
-            </div>
-            <div style={{ gridArea: 'menu' }}>
+            <div style={{ width: '180px' }}>
               <Menu
                 width={width}
                 height={height}
@@ -145,35 +178,6 @@ export default class Home extends React.Component<{}, GridState> {
                   this.setState({ [key]: value })
                 }}
               />
-            </div>
-            <div
-              style={{
-                gridArea: 'table',
-                width,
-                height
-              }}
-            >
-              <div style={containerStyle}>
-                {gridAreas.map((gridArea, index) => {
-                  const includedCells = cells.filter(
-                    cell => cell.gridArea === gridArea
-                  )
-                  const { id } = includedCells[0]
-                  return (
-                    <PaneEditor
-                      key={index}
-                      gridArea={gridArea}
-                      cells={includedCells}
-                      onSet={value =>
-                        this.setState(s => updateCellName(s, id, value))
-                      }
-                      onClickBreak={() => {
-                        this.setState(s => breakPanes(s, gridArea))
-                      }}
-                    />
-                  )
-                })}
-              </div>
             </div>
           </div>
         </div>
