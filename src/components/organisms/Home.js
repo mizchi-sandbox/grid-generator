@@ -1,55 +1,25 @@
 /* @flow */
+import type { GridState } from '../../domain/GridState'
 import React, { Fragment } from 'react'
-import uuid from 'uuid'
 import range from 'lodash.range'
 import uniq from 'lodash.uniq'
-import flatten from 'lodash.flatten'
-import chunk from 'lodash.chunk'
 import Pane from '../atoms/Pane'
 import Output from '../atoms/Output'
+import {
+  deleteRow,
+  deleteColumn,
+  resetUid,
+  genUid,
+  addRow,
+  addColumn,
+  cellsToAreas
+} from '../../domain/GridState'
+
+const assign: any = Object.assign
 
 const VERSION = '2'
 const LAST_SAVE_VERSION = 'last-save-version'
 const STATE = 'state'
-
-type Cell = { name: string }
-
-type State = {
-  width: string,
-  height: string,
-  columns: Array<string | number>,
-  rows: Array<string | number>,
-  rowCount: number,
-  cells: Array<Cell>,
-  columnCount: number,
-  selectedPaneId: ?string
-}
-
-let cnt = 0
-
-const fillEmptyCells = (cells: Cell[], x: number, y: number) => {
-  const size = x * y - cells.length
-  const addingCells = range(size).map(_ => ({
-    name: 'g' + (++cnt).toString(),
-    id: uuid()
-  }))
-  return cells.concat(addingCells)
-}
-
-const deleteRow = (cells: Cell[], x: number, y: number) => {
-  return cells.slice(0, (x - 1) * y)
-}
-
-const deleteColumn = (cells: Cell[], x: number, y: number) => {
-  return flatten(chunk(cells, y).map(c => c.slice(0, c.length - 1)))
-}
-
-const cellsToAreas = (cells: Cell[], columnCount: number) => {
-  return chunk(cells, columnCount)
-    .map(row => row.map(r => r.name).join(' '))
-    .map(s => `'${s}'`)
-    .join(' ')
-}
 
 const initialState = {
   width: '640px',
@@ -58,11 +28,11 @@ const initialState = {
   rows: ['1fr'],
   rowCount: 1,
   columnCount: 1,
-  cells: [{ name: 'g0', id: uuid() }],
+  cells: [{ name: 'g0', id: '#root' }],
   selectedPaneId: null
 }
 
-export default class Home extends React.Component<void, State> {
+export default class Home extends React.Component<void, GridState> {
   state = initialState
 
   updateCellName(id: number, name: string) {
@@ -80,57 +50,13 @@ export default class Home extends React.Component<void, State> {
     })
   }
 
-  addRow() {
-    this.setState(state => ({
-      ...state,
-      rowCount: state.rowCount + 1,
-      rows: state.rows.concat(['1fr']),
-      cells: fillEmptyCells(state.cells, state.rowCount + 1, state.columnCount)
-    }))
-  }
-
-  deleteRow() {
-    const { rows, rowCount, columnCount, cells } = this.state
-    if (rowCount === 1) {
-      return
-    }
-    this.setState(state => ({
-      ...state,
-      rowCount: rowCount - 1,
-      rows: rows.slice(0, rows.length - 1),
-      cells: deleteRow(cells, rowCount, columnCount)
-    }))
-  }
-
-  addColumn() {
-    this.setState(state => ({
-      ...state,
-      columnCount: state.columnCount + 1,
-      columns: state.columns.concat(['1fr']),
-      cells: fillEmptyCells(state.cells, state.rowCount, state.columnCount + 1)
-    }))
-  }
-
-  deleteColumn() {
-    const { columns, columnCount, rowCount, cells } = this.state
-    if (columnCount === 1) {
-      return
-    }
-    this.setState(state => ({
-      ...state,
-      columnCount: columnCount - 1,
-      columns: columns.slice(0, columns.length - 1),
-      cells: deleteColumn(cells, rowCount, columnCount)
-    }))
-  }
-
   breakPanes(name: string) {
     const { cells } = this.state
     this.setState(state => ({
       ...state,
       cells: cells.map(cell => {
         if (cell.name === name) {
-          return { ...cell, name: 'g' + ++cnt }
+          return { ...cell, name: 'g' + genUid() }
         } else {
           return cell
         }
@@ -149,7 +75,7 @@ export default class Home extends React.Component<void, State> {
     const lastState = window.localStorage.getItem(STATE)
     if (lastState) {
       const state = JSON.parse(lastState)
-      cnt = state.cells.length + 10
+      resetUid(state.cells.length + 10)
       this.setState(state)
       console.log('loaded last state')
     }
@@ -168,12 +94,12 @@ export default class Home extends React.Component<void, State> {
       display: 'grid',
       gridTemplateColumns: this.state.columns.join(' '),
       gridTemplateRows: this.state.rows.join(' '),
-      gridTemplateAreas: cellsToAreas(this.state.cells, this.state.columnCount)
+      gridTemplateAreas: cellsToAreas(this.state)
     }
 
     const { cells, columns, rows } = this.state
+    // debugger
     const gridNames = uniq(cells.map(c => c.name))
-    const assign: any = Object.assign
 
     return (
       <Fragment>
@@ -235,14 +161,14 @@ export default class Home extends React.Component<void, State> {
               </div>
             </div>
             <div style={{ gridArea: 'addr' }}>
-              <button onClick={this.addRow.bind(this)}>+</button>
+              <button onClick={() => this.setState(addRow)}>+</button>
               /
-              <button onClick={this.deleteRow.bind(this)}>-</button>
+              <button onClick={() => this.setState(deleteRow)}>-</button>
             </div>
             <div style={{ gridArea: 'addc' }}>
-              <button onClick={this.addColumn.bind(this)}>+</button>
+              <button onClick={() => this.setState(addColumn)}>+</button>
               /
-              <button onClick={this.deleteColumn.bind(this)}>-</button>
+              <button onClick={() => this.setState(deleteColumn)}>-</button>
             </div>
             <div style={{ gridArea: 'rows' }}>
               <div
@@ -307,7 +233,6 @@ export default class Home extends React.Component<void, State> {
             <div
               style={{
                 gridArea: 'table',
-
                 width: this.state.width,
                 height: this.state.height
               }}
