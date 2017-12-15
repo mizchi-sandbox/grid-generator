@@ -1,6 +1,8 @@
 /* @flow */
 import React, { Fragment } from 'react'
 export default function Menu({
+  previewWidth,
+  previewHeight,
   width,
   height,
   onChangeValue,
@@ -22,7 +24,7 @@ export default function Menu({
         color: '#ddd'
       }}
     >
-      GridGen
+      <h2>GridEditor</h2>
       <div>
         <button
           onClick={_ => {
@@ -34,22 +36,35 @@ export default function Menu({
       </div>
       <hr />
       <span>Container</span>
-      <div>
-        width:
-        <br />
-        <input
-          value={width}
-          onChange={ev => onChangeValue('width', ev.target.value)}
-        />
-      </div>
-      <div>
-        height:
-        <br />
-        <input
-          value={height}
-          onChange={ev => onChangeValue('height', ev.target.value)}
-        />
-      </div>
+      {[
+        {
+          name: 'previewWidth',
+          value: previewWidth
+        },
+        {
+          name: 'previewHeight',
+          value: previewHeight
+        },
+        {
+          name: 'width',
+          value: width
+        },
+        {
+          name: 'height',
+          value: height
+        }
+      ].map((el, index) => {
+        return (
+          <div key={index}>
+            {el.name}:
+            <br />
+            <input
+              value={el.value}
+              onChange={ev => onChangeValue(el.name, ev.target.value)}
+            />
+          </div>
+        )
+      })}
     </div>
   )
 }

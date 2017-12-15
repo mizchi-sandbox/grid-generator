@@ -1,10 +1,13 @@
 /* @flow */
 import flatten from 'lodash.flatten'
 import chunk from 'lodash.chunk'
+import range from 'lodash.range'
 
 export type Cell = { gridArea: string, id: number }
 
 export type GridState = {
+  previewWidth: string,
+  previewHeight: string,
   width: string,
   height: string,
   columns: Array<string>,
@@ -15,33 +18,24 @@ export type GridState = {
   selectedPaneId: ?string
 }
 
-export const genUid = (cells: Cell[]): number => {
+export const getMinBlankId = (ids: number[]): number => {
   let cnt = 0
-  while (cnt < cells.length) {
-    const r = cells.find(c => c.id === cnt)
+  while (cnt < ids.length) {
+    const r = ids.find(id => id === cnt)
     if (r == null) {
       return cnt
     }
     cnt++
   }
-  return cells.length
+  return ids.length
 }
 
-const fillEmptyCells = (state: GridState, to: number): Cell[] => {
-  const { cells } = state
-  let diff = to - cells.length
-  let buf = cells.slice()
-  while (diff--) {
-    const id = genUid(buf)
-    buf = [
-      ...buf,
-      {
-        id,
-        gridArea: 'g' + id.toString()
-      }
-    ]
+export function createCell(cells: Cell[]) {
+  const id = getMinBlankId(cells.map(c => c.id))
+  return {
+    id,
+    gridArea: `g${id}`
   }
-  return buf
 }
 
 export const deleteRow = (state: GridState): GridState => {
@@ -65,20 +59,32 @@ export const deleteColumn = (state: GridState): GridState => {
 }
 
 export const addRow = (state: GridState): GridState => {
+  const { cells, rows, rowCount } = state
   return {
     ...state,
-    rowCount: state.rowCount + 1,
-    rows: state.rows.concat(['1fr']),
-    cells: fillEmptyCells(state, (state.rowCount + 1) * state.columnCount)
+    rowCount: rowCount + 1,
+    rows: rows.concat(['1fr']),
+    cells: range(state.columnCount).reduce(
+      acc => [...acc, createCell(acc)],
+      cells
+    )
   }
 }
 
 export const addColumn = (state: GridState): GridState => {
+  const { cells, columns, columnCount } = state
+  const buf = cells.slice()
   return {
     ...state,
-    columnCount: state.columnCount + 1,
-    columns: state.columns.concat(['1fr']),
-    cells: fillEmptyCells(state, state.rowCount * (state.columnCount + 1))
+    columnCount: columnCount + 1,
+    columns: columns.concat(['1fr']),
+    cells: flatten(
+      chunk(cells, columnCount).map(row => {
+        const newCell = createCell(buf)
+        buf.push(newCell)
+        return [...row, newCell]
+      })
+    )
   }
 }
 
@@ -108,20 +114,17 @@ export const updateCellName = (
 
 export function breakPanes(state: GridState, gridArea: string): GridState {
   const { cells } = state
+  const buf = cells.slice()
   return {
     ...state,
-    cells: cells.reduce((acc, cell) => {
+    cells: cells.map(cell => {
       if (cell.gridArea === gridArea) {
-        return [
-          ...acc,
-          {
-            ...cell,
-            gridArea: 'g' + genUid(acc)
-          }
-        ]
+        const newCell = createCell(buf)
+        buf.push(newCell)
+        return newCell
       } else {
-        return [...acc, cell]
+        return cell
       }
-    }, [])
+    })
   }
 }
