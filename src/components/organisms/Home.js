@@ -6,9 +6,9 @@ import uniq from 'lodash.uniq'
 import flatten from 'lodash.flatten'
 import chunk from 'lodash.chunk'
 import Pane from '../atoms/Pane'
-import paramCase from 'param-case'
+import Output from '../atoms/Output'
 
-const VERSION = '1'
+const VERSION = '2'
 const LAST_SAVE_VERSION = 'last-save-version'
 const STATE = 'state'
 
@@ -22,8 +22,7 @@ type State = {
   rowCount: number,
   cells: Array<Cell>,
   columnCount: number,
-  selectedPaneId: ?string,
-  outputMode: 'css' | 'react' | 'internal'
+  selectedPaneId: ?string
 }
 
 let cnt = 0
@@ -60,8 +59,7 @@ const initialState = {
   rowCount: 1,
   columnCount: 1,
   cells: [{ name: 'g0', id: uuid() }],
-  selectedPaneId: null,
-  outputMode: 'css'
+  selectedPaneId: null
 }
 
 export default class Home extends React.Component<void, State> {
@@ -150,7 +148,9 @@ export default class Home extends React.Component<void, State> {
 
     const lastState = window.localStorage.getItem(STATE)
     if (lastState) {
-      this.setState(JSON.parse(lastState))
+      const state = JSON.parse(lastState)
+      cnt = state.cells.length + 10
+      this.setState(state)
       console.log('loaded last state')
     }
   }
@@ -175,15 +175,6 @@ export default class Home extends React.Component<void, State> {
     const gridNames = uniq(cells.map(c => c.name))
     const assign: any = Object.assign
 
-    const cssString =
-      '.container {\n' +
-      Object.keys(containerStyle)
-        .map(key => {
-          const value = containerStyle[key]
-          return `  ${paramCase(key)}: ${value};`
-        })
-        .join('\n') +
-      '\n}'
     return (
       <Fragment>
         <div style={{ width: '100%', height: '100%' }}>
@@ -204,7 +195,6 @@ export default class Home extends React.Component<void, State> {
               "_0   columns addc menu"
               "rows table   _3   menu"
               "addr _2      _4   menu"
-
             `
             }}
           >
@@ -291,7 +281,7 @@ export default class Home extends React.Component<void, State> {
             <div style={{ gridArea: 'menu' }}>
               <div>
                 <button
-                  onClick={ev => {
+                  onClick={_ev => {
                     window.localStorage.clear()
                     this.setState(initialState)
                   }}
@@ -345,36 +335,7 @@ export default class Home extends React.Component<void, State> {
           </div>
         </div>
         <hr />
-        <div>
-          OutputMode:
-          <button onClick={() => this.setState({ outputMode: 'react' })}>
-            React
-          </button>
-          <button onClick={() => this.setState({ outputMode: 'css' })}>
-            CSS
-          </button>
-          <button onClick={() => this.setState({ outputMode: 'internal' })}>
-            Internal
-          </button>
-        </div>
-        {this.state.outputMode === 'react' && (
-          <Fragment>
-            <h3>React Style Object</h3>
-            <pre>const style = {JSON.stringify(containerStyle, null, 2)}</pre>
-          </Fragment>
-        )}
-        {this.state.outputMode === 'css' && (
-          <Fragment>
-            <h3>CSS</h3>
-            <pre> {cssString} </pre>
-          </Fragment>
-        )}
-        {this.state.outputMode === 'internal' && (
-          <Fragment>
-            <h3>Grid Generator Inner Expression</h3>
-            <pre> {JSON.stringify(this.state, null, 2)} </pre>
-          </Fragment>
-        )}
+        <Output state={this.state} containerStyle={containerStyle} />
       </Fragment>
     )
   }
