@@ -6,7 +6,8 @@ import paramCase from 'param-case'
 export default class Output extends React.Component<
   {
     gridState: GridState,
-    containerStyle: any
+    containerStyle: any,
+    gridAreas: string[]
   },
   {
     outputMode: 'css' | 'react' | 'internal'
@@ -17,18 +18,21 @@ export default class Output extends React.Component<
   }
 
   render() {
-    const { gridState, containerStyle } = this.props
+    const { gridState, containerStyle, gridAreas } = this.props
     const { outputMode } = this.state
 
     const cssString =
-      '.container {\n' +
+      '.gridContainer {\n' +
       Object.keys(containerStyle)
         .map(key => {
           const value = containerStyle[key]
           return `  ${paramCase(key)}: ${value};`
         })
         .join('\n') +
-      '\n}'
+      '\n}\n' +
+      gridAreas
+        .map(area => `.${area}Area {\n  grid-area: ${area};\n}`)
+        .join('\n')
     return (
       <Fragment>
         <div>
@@ -51,8 +55,22 @@ export default class Output extends React.Component<
         )}
         {outputMode === 'css' && (
           <Fragment>
-            <h3>CSS</h3>
-            <pre> {cssString} </pre>
+            <div style={{ display: 'flex' }}>
+              <div style={{ flex: 1 }}>
+                <h3>HTML</h3>
+                <pre>
+                  {`
+<div class='gridContainer'>
+${gridAreas.map(area => `  <div class='${area}Area'></div> `).join('\n')}
+</div>`}
+                </pre>
+              </div>
+              <div style={{ flex: 1 }}>
+                <h3>CSS</h3>
+                <pre> {cssString} </pre>
+              </div>
+            </div>
+            <hr />
           </Fragment>
         )}
         {outputMode === 'internal' && (

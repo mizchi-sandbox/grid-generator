@@ -235,7 +235,11 @@ export default class Home extends React.Component<{}, GridState> {
           </div>
         </div>
         <hr />
-        <Output gridState={this.state} containerStyle={containerStyle} />
+        <Output
+          gridState={this.state}
+          containerStyle={containerStyle}
+          gridAreas={gridAreas}
+        />
       </Fragment>
     )
   }
