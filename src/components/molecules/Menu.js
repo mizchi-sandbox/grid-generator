@@ -1,17 +1,21 @@
 /* @flow */
-import React, { Fragment } from 'react'
+import React from 'react'
 export default function Menu({
   previewWidth,
   previewHeight,
   width,
   height,
   onChangeValue,
-  onClickReset
+  onClickReset,
+  onClickHolyGrail
 }: {
+  previewWidth: string,
+  previewHeight: string,
   width: string,
   height: string,
   onChangeValue: (key: string, value: string) => void,
-  onClickReset: () => void
+  onClickReset: () => void,
+  onClickHolyGrail: () => void
 }) {
   return (
     <div
@@ -25,13 +29,24 @@ export default function Menu({
       }}
     >
       <h2>GridEditor</h2>
+      <hr />
+      Template
       <div>
         <button
           onClick={_ => {
             onClickReset()
           }}
         >
-          RESET
+          Simple
+        </button>
+      </div>
+      <div>
+        <button
+          onClick={_ => {
+            onClickHolyGrail()
+          }}
+        >
+          HolyGrail
         </button>
       </div>
       <hr />

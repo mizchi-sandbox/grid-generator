@@ -7,7 +7,7 @@ import Output from '../atoms/Output'
 import RowsEditor from '../atoms/RowsEditor'
 import ColumnsEditor from '../atoms/ColumnsEditor'
 import Menu from '../molecules/Menu'
-import Centerize from '../atoms/Centerize'
+import holyGrailData from '../../domain/holyGrailData'
 
 import {
   deleteRow,
@@ -221,6 +221,10 @@ export default class Home extends React.Component<{}, GridState> {
                 onClickReset={() => {
                   window.localStorage.clear()
                   this.setState(initialState)
+                }}
+                onClickHolyGrail={() => {
+                  window.localStorage.clear()
+                  this.setState(holyGrailData)
                 }}
                 onChangeValue={(key, value) => {
                   window.localStorage.clear()

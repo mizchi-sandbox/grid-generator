@@ -13,7 +13,7 @@ export default class Output extends React.Component<
   }
 > {
   state = {
-    outputMode: 'internal'
+    outputMode: 'css'
   }
 
   render() {
