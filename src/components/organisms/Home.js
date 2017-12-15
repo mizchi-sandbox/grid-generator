@@ -86,17 +86,17 @@ export default class Home extends React.Component<{}, GridState> {
   }
 
   render() {
+    const { cells, columns, rows } = this.state
+
     const containerStyle = {
       width: '100%',
       height: '100%',
       display: 'grid',
-      gridTemplateColumns: this.state.columns.join(' '),
-      gridTemplateRows: this.state.rows.join(' '),
+      gridTemplateColumns: columns.join(' '),
+      gridTemplateRows: rows.join(' '),
       gridTemplateAreas: cellsToAreas(this.state)
     }
 
-    const { cells, columns, rows } = this.state
-    // debugger
     const gridNames = uniq(cells.map(c => c.name))
 
     return (
