@@ -2,7 +2,7 @@
 import type { GridState } from '../../domain/GridState'
 import React, { Fragment } from 'react'
 import uniq from 'lodash.uniq'
-import Pane from '../atoms/Pane'
+import PaneEditor from '../atoms/PaneEditor'
 import Output from '../atoms/Output'
 import RowsEditor from '../atoms/RowsEditor'
 import ColumnsEditor from '../atoms/ColumnsEditor'
@@ -160,7 +160,7 @@ export default class Home extends React.Component<{}, GridState> {
                   )
                   const { id } = includedCells[0]
                   return (
-                    <Pane
+                    <PaneEditor
                       key={index}
                       gridArea={gridArea}
                       cells={includedCells}
