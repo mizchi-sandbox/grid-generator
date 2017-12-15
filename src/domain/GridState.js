@@ -2,13 +2,13 @@
 import flatten from 'lodash.flatten'
 import chunk from 'lodash.chunk'
 
-export type Cell = { name: string, id: number }
+export type Cell = { gridArea: string, id: number }
 
 export type GridState = {
   width: string,
   height: string,
-  columns: Array<string | number>,
-  rows: Array<string | number>,
+  columns: Array<string>,
+  rows: Array<string>,
   rowCount: number,
   cells: Array<Cell>,
   columnCount: number,
@@ -27,22 +27,19 @@ export const genUid = (cells: Cell[]): number => {
   return cells.length
 }
 
-const fillEmptyCells = (
-  state: GridState,
-  rowCount: number,
-  columnCount: number
-): Cell[] => {
+const fillEmptyCells = (state: GridState, to: number): Cell[] => {
   const { cells } = state
-  let size = rowCount * columnCount - cells.length
+  let diff = to - cells.length
   let buf = cells.slice()
-  while (size--) {
+  while (diff--) {
     const id = genUid(buf)
-    buf = buf.concat([
+    buf = [
+      ...buf,
       {
         id,
-        name: 'g' + id.toString()
+        gridArea: 'g' + id.toString()
       }
-    ])
+    ]
   }
   return buf
 }
@@ -72,7 +69,7 @@ export const addRow = (state: GridState): GridState => {
     ...state,
     rowCount: state.rowCount + 1,
     rows: state.rows.concat(['1fr']),
-    cells: fillEmptyCells(state, state.rowCount + 1, state.columnCount)
+    cells: fillEmptyCells(state, (state.rowCount + 1) * state.columnCount)
   }
 }
 
@@ -81,23 +78,27 @@ export const addColumn = (state: GridState): GridState => {
     ...state,
     columnCount: state.columnCount + 1,
     columns: state.columns.concat(['1fr']),
-    cells: fillEmptyCells(state, state.rowCount, state.columnCount + 1)
+    cells: fillEmptyCells(state, state.rowCount * (state.columnCount + 1))
   }
 }
 
 export const cellsToAreas = ({ cells, columnCount }: GridState): string => {
   return chunk(cells, columnCount)
-    .map(row => row.map(r => r.name).join(' '))
+    .map(row => row.map(r => r.gridArea).join(' '))
     .map(s => `'${s}'`)
     .join(' ')
 }
 
-export const updateCellName = (state: GridState, id: number, name: string) => {
+export const updateCellName = (
+  state: GridState,
+  id: number,
+  gridArea: string
+) => {
   return {
     ...state,
     cells: state.cells.map(cell => {
       if (cell.id === id) {
-        return { ...cell, name }
+        return { ...cell, gridArea }
       } else {
         return cell
       }
@@ -105,16 +106,22 @@ export const updateCellName = (state: GridState, id: number, name: string) => {
   }
 }
 
-export function breakPanes(state: GridState, name: string): GridState {
+export function breakPanes(state: GridState, gridArea: string): GridState {
   const { cells } = state
   return {
     ...state,
-    cells: cells.map(cell => {
-      if (cell.name === name) {
-        return { ...cell, name: 'g' + genUid(cells) }
+    cells: cells.reduce((acc, cell) => {
+      if (cell.gridArea === gridArea) {
+        return [
+          ...acc,
+          {
+            ...cell,
+            gridArea: 'g' + genUid(acc)
+          }
+        ]
       } else {
-        return cell
+        return [...acc, cell]
       }
-    })
+    }, [])
   }
 }

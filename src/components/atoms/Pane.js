@@ -4,7 +4,7 @@ import * as React from 'react'
 
 type Props = {
   cells: Cell[],
-  gridName: string,
+  gridArea: string,
   onSet: Function,
   onClickBreak: Function
 }
@@ -24,11 +24,11 @@ export default class Pane extends React.Component<Props, State> {
   }
 
   render() {
-    const { onSet, gridName, onClickBreak, cells } = this.props
+    const { onSet, gridArea, onClickBreak, cells } = this.props
     const { editing, editingValue } = this.state
 
     const cellStyle = {
-      gridArea: gridName,
+      gridArea,
       width: '100%',
       height: '100%',
       display: 'flex',
@@ -65,11 +65,11 @@ export default class Pane extends React.Component<Props, State> {
                 this.setState(state => ({
                   ...state,
                   editing: true,
-                  editingValue: gridName
+                  editingValue: gridArea
                 }))
               }}
             >
-              {gridName}
+              {gridArea}
             </span>
             {cells.length > 1 && (
               <div>
