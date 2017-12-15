@@ -8,7 +8,6 @@ import Output from '../atoms/Output'
 import {
   deleteRow,
   deleteColumn,
-  resetUid,
   genUid,
   addRow,
   addColumn,
@@ -28,7 +27,7 @@ const initialState = {
   rows: ['1fr'],
   rowCount: 1,
   columnCount: 1,
-  cells: [{ name: 'g0', id: '#root' }],
+  cells: [{ name: 'g0', id: 0 }],
   selectedPaneId: null
 }
 
@@ -56,7 +55,7 @@ export default class Home extends React.Component<void, GridState> {
       ...state,
       cells: cells.map(cell => {
         if (cell.name === name) {
-          return { ...cell, name: 'g' + genUid() }
+          return { ...cell, name: 'g' + genUid(cells) }
         } else {
           return cell
         }
@@ -75,7 +74,6 @@ export default class Home extends React.Component<void, GridState> {
     const lastState = window.localStorage.getItem(STATE)
     if (lastState) {
       const state = JSON.parse(lastState)
-      resetUid(state.cells.length + 10)
       this.setState(state)
       console.log('loaded last state')
     }

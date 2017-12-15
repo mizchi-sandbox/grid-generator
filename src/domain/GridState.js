@@ -1,10 +1,8 @@
 /* @flow */
-import uuid from 'uuid'
-import range from 'lodash.range'
 import flatten from 'lodash.flatten'
 import chunk from 'lodash.chunk'
 
-export type Cell = { name: string }
+export type Cell = { name: string, id: number }
 
 export type GridState = {
   width: string,
@@ -17,14 +15,16 @@ export type GridState = {
   selectedPaneId: ?string
 }
 
-let cnt = 0
-
-export const genUid = () => {
-  return ++cnt
-}
-
-export const resetUid = v => {
-  cnt = v
+export const genUid = (cells: Cell[]): number => {
+  let cnt = 0
+  while (cnt < cells.length) {
+    const r = cells.find(c => c.id === cnt)
+    if (r == null) {
+      return cnt
+    }
+    cnt++
+  }
+  return cells.length
 }
 
 const fillEmptyCells = (
@@ -33,12 +33,18 @@ const fillEmptyCells = (
   columnCount: number
 ): Cell[] => {
   const { cells } = state
-  const size = rowCount * columnCount - cells.length
-  const addingCells = range(size).map(_ => ({
-    name: 'g' + genUid().toString(),
-    id: uuid()
-  }))
-  return cells.concat(addingCells)
+  let size = rowCount * columnCount - cells.length
+  let buf = cells.slice()
+  while (size--) {
+    const id = genUid(buf)
+    buf = buf.concat([
+      {
+        id,
+        name: 'g' + id.toString()
+      }
+    ])
+  }
+  return buf
 }
 
 export const deleteRow = (state: GridState): GridState => {
@@ -84,4 +90,31 @@ export const cellsToAreas = ({ cells, columnCount }: GridState): string => {
     .map(row => row.map(r => r.name).join(' '))
     .map(s => `'${s}'`)
     .join(' ')
+}
+
+export const updateCellName = (state: GridState, id: number, name: string) => {
+  return {
+    ...state,
+    cells: state.cells.map(cell => {
+      if (cell.id === id) {
+        return { ...cell, name }
+      } else {
+        return cell
+      }
+    })
+  }
+}
+
+export function breakPanes(state: GridState, name: string): GridState {
+  const { cells } = state
+  return {
+    ...state,
+    cells: cells.map(cell => {
+      if (cell.name === name) {
+        return { ...cell, name: 'g' + genUid(cells) }
+      } else {
+        return cell
+      }
+    })
+  }
 }
