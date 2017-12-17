@@ -1,5 +1,5 @@
 /* @flow */
-module.exports = {
+export default {
   previewWidth: '100%',
   previewHeight: '100%',
   width: '100%',

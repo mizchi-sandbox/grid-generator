@@ -1,6 +1,7 @@
 /* @flow */
 import type { Cell } from '../../domain/GridState'
 import React, { Fragment } from 'react'
+import uuid from 'uuid'
 import Centerize from './Centerize'
 
 type Props = {
@@ -22,6 +23,7 @@ export default class Pane extends React.Component<Props, State> {
       editing: false,
       editingValue: null
     }
+    this._uid = 'p' + uuid()
   }
 
   render() {
@@ -41,6 +43,7 @@ export default class Pane extends React.Component<Props, State> {
         <Centerize>
           {editing ? (
             <input
+              className={this._uid}
               value={editingValue}
               onChange={ev => {
                 const value = ev.target.value
@@ -61,11 +64,22 @@ export default class Pane extends React.Component<Props, State> {
             <Fragment>
               <span
                 onClick={() => {
-                  this.setState(state => ({
-                    ...state,
-                    editing: true,
-                    editingValue: gridArea
-                  }))
+                  this.setState(
+                    state => ({
+                      ...state,
+                      editing: true,
+                      editingValue: gridArea
+                    }),
+                    () => {
+                      setTimeout(() => {
+                        const el = document.querySelector('.' + this._uid)
+                        if (el) {
+                          el.focus()
+                          el.setSelectionRange(0, el.value.length)
+                        }
+                      }, 96)
+                    }
+                  )
                 }}
               >
                 {gridArea}

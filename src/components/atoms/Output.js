@@ -22,7 +22,7 @@ export default class Output extends React.Component<
     const { outputMode } = this.state
 
     const cssString =
-      '.gridContainer {\n' +
+      '.container {\n' +
       Object.keys(containerStyle)
         .map(key => {
           const value = containerStyle[key]
@@ -31,11 +31,11 @@ export default class Output extends React.Component<
         .join('\n') +
       '\n}\n' +
       gridAreas
-        .map(area => `.${area}Area {\n  grid-area: ${area};\n}`)
+        .map(area => `.area-${area} {\n  grid-area: ${area};\n}`)
         .join('\n')
     return (
-      <Fragment>
-        <div>
+      <div style={{ backgroundColor: '#333', color: '#ddd' }}>
+        {/* <div>
           OutputMode:
           <button onClick={() => this.setState({ outputMode: 'react' })}>
             React
@@ -46,7 +46,7 @@ export default class Output extends React.Component<
           <button onClick={() => this.setState({ outputMode: 'internal' })}>
             Internal
           </button>
-        </div>
+        </div> */}
         {outputMode === 'react' && (
           <Fragment>
             <h3>React Style Object</h3>
@@ -61,7 +61,9 @@ export default class Output extends React.Component<
                 <pre>
                   {`
 <div class='gridContainer'>
-${gridAreas.map(area => `  <div class='${area}Area'></div> `).join('\n')}
+${gridAreas
+                    .map(areaName => `  <div class='area-${areaName}'></div> `)
+                    .join('\n')}
 </div>`}
                 </pre>
               </div>
@@ -79,7 +81,7 @@ ${gridAreas.map(area => `  <div class='${area}Area'></div> `).join('\n')}
             <pre> {JSON.stringify(gridState, null, 2)} </pre>
           </Fragment>
         )}
-      </Fragment>
+      </div>
     )
   }
 }

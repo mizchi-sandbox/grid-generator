@@ -1,6 +1,6 @@
 /* @flow */
 import type { GridState } from '../../domain/GridState'
-import React, { Fragment } from 'react'
+import React from 'react'
 import uniq from 'lodash.uniq'
 import styled from 'styled-components'
 import PaneEditor from '../atoms/PaneEditor'
@@ -8,7 +8,8 @@ import Output from '../atoms/Output'
 import RowsEditor from '../atoms/RowsEditor'
 import ColumnsEditor from '../atoms/ColumnsEditor'
 import Menu from '../molecules/Menu'
-import holyGrailData from '../../domain/holyGrailData'
+import holyGrailData from '../../domain/presets/holyGrail'
+import simpleData from '../../domain/presets/simple'
 
 import {
   deleteRow,
@@ -69,8 +70,8 @@ const EditorLayout: React.StatelessComponent<{}> = styled.div`
   height: 100%;
   display: grid;
   grid-template-columns: 1fr 200px;
-  grid-template-rows: 100%;
-  grid-template-areas: 'left right';
+  grid-template-rows: 1fr 300px;
+  grid-template-areas: 'left right' 'output right';
 `
 
 const EditorLeft: React.StatelessComponent<{}> = styled.div`
@@ -81,24 +82,19 @@ const EditorRight: React.StatelessComponent<{}> = styled.div`
   grid-area: right;
 `
 
+const EditorOutput: React.StatelessComponent<{}> = styled.div`
+  height: 300px;
+  overflow-y: scroll;
+  background-color: #333;
+  color: #ddd;
+  grid-area: output;
+`
+
 const assign = (Object.assign: any)
 
 const VERSION = '3'
 const LAST_SAVE_VERSION = 'last-save-version'
 const STATE = 'state'
-
-const initialState = {
-  previewWidth: '640px',
-  previewHeight: '480px',
-  width: '100%',
-  height: '100%',
-  columns: ['1fr'],
-  rows: ['1fr'],
-  rowCount: 1,
-  columnCount: 1,
-  cells: [{ id: 0, gridArea: 'g0' }],
-  selectedPaneId: null
-}
 
 const controllerX = '60px'
 const controllerY = '30px'
@@ -112,7 +108,7 @@ const addPx = (...vals: string[]) => {
 }
 
 export default class Home extends React.Component<{}, GridState> {
-  state = initialState
+  state = holyGrailData
 
   componentDidMount() {
     const lastSaveVersion = window.localStorage.getItem(LAST_SAVE_VERSION)
@@ -176,121 +172,116 @@ export default class Home extends React.Component<{}, GridState> {
         : addPx(controllerY, previewHeight, controllerY)
 
     return (
-      <Fragment>
-        <Root>
-          <EditorLayout>
-            <EditorLeft>
+      <Root>
+        <EditorLayout>
+          <EditorLeft>
+            <div
+              style={{
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
               <div
                 style={{
-                  height: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center'
+                  width: realContainerWidth,
+                  height: realContainerHeight
                 }}
               >
-                <div
-                  style={{
-                    width: realContainerWidth,
-                    height: realContainerHeight
-                  }}
-                >
-                  <GridEditorLayout width={width} height={height}>
-                    <ColumnsArea>
-                      <ColumnsEditor
-                        columns={columns}
-                        onChangeColumn={(index, value) => {
-                          this.setState({
-                            ...this.state,
-                            columns: assign([], columns, {
-                              [index]: value
-                            })
+                <GridEditorLayout width={width} height={height}>
+                  <ColumnsArea>
+                    <ColumnsEditor
+                      columns={columns}
+                      onChangeColumn={(index, value) => {
+                        this.setState({
+                          ...this.state,
+                          columns: assign([], columns, {
+                            [index]: value
                           })
-                        }}
-                      />
-                    </ColumnsArea>
-                    <RowsArea>
-                      <RowsEditor
-                        rows={rows}
-                        onChangeRow={(index, value) => {
-                          this.setState({
-                            ...this.state,
-                            rows: assign([], rows, {
-                              [index]: value
-                            })
+                        })
+                      }}
+                    />
+                  </ColumnsArea>
+                  <RowsArea>
+                    <RowsEditor
+                      rows={rows}
+                      onChangeRow={(index, value) => {
+                        this.setState({
+                          ...this.state,
+                          rows: assign([], rows, {
+                            [index]: value
                           })
-                        }}
-                      />
-                    </RowsArea>
-                    <AddRowsButtonArea>
-                      <button onClick={() => this.setState(addRow)}>+</button>
-                      <button onClick={() => this.setState(deleteRow)}>
-                        -
-                      </button>
-                    </AddRowsButtonArea>
-                    <AddColumnsButtonArea>
-                      <button onClick={() => this.setState(addColumn)}>
-                        +
-                      </button>
-                      <button onClick={() => this.setState(deleteColumn)}>
-                        -
-                      </button>
-                    </AddColumnsButtonArea>
-                    <EditArea>
-                      <div style={containerStyle}>
-                        {gridAreas.map((gridArea, index) => {
-                          const includedCells = cells.filter(
-                            cell => cell.gridArea === gridArea
-                          )
-                          const { id } = includedCells[0]
-                          return (
-                            <PaneEditor
-                              key={index}
-                              gridArea={gridArea}
-                              cells={includedCells}
-                              onSet={value =>
-                                this.setState(s => updateCellName(s, id, value))
-                              }
-                              onClickBreak={() => {
-                                this.setState(s => breakPanes(s, gridArea))
-                              }}
-                            />
-                          )
-                        })}
-                      </div>
-                    </EditArea>
-                  </GridEditorLayout>
-                </div>
+                        })
+                      }}
+                    />
+                  </RowsArea>
+                  <AddRowsButtonArea>
+                    <button onClick={() => this.setState(addRow)}>+</button>
+                    <button onClick={() => this.setState(deleteRow)}>-</button>
+                  </AddRowsButtonArea>
+                  <AddColumnsButtonArea>
+                    <button onClick={() => this.setState(addColumn)}>+</button>
+                    <button onClick={() => this.setState(deleteColumn)}>
+                      -
+                    </button>
+                  </AddColumnsButtonArea>
+                  <EditArea>
+                    <div style={containerStyle}>
+                      {gridAreas.map((gridArea, index) => {
+                        const includedCells = cells.filter(
+                          cell => cell.gridArea === gridArea
+                        )
+                        const { id } = includedCells[0]
+                        return (
+                          <PaneEditor
+                            key={index}
+                            gridArea={gridArea}
+                            cells={includedCells}
+                            onSet={value =>
+                              this.setState(s => updateCellName(s, id, value))
+                            }
+                            onClickBreak={() => {
+                              this.setState(s => breakPanes(s, gridArea))
+                            }}
+                          />
+                        )
+                      })}
+                    </div>
+                  </EditArea>
+                </GridEditorLayout>
               </div>
-            </EditorLeft>
-            <EditorRight>
-              <Menu
-                previewWidth={previewWidth}
-                previewHeight={previewHeight}
-                width={width}
-                height={height}
-                onClickReset={() => {
-                  window.localStorage.clear()
-                  this.setState(initialState)
-                }}
-                onClickHolyGrail={() => {
-                  window.localStorage.clear()
-                  this.setState(holyGrailData)
-                }}
-                onChangeValue={(key, value) => {
-                  window.localStorage.clear()
-                  this.setState({ [key]: value })
-                }}
-              />
-            </EditorRight>
-          </EditorLayout>
-        </Root>
-        {/* <hr />
-        <Output
-          gridState={this.state}
-          containerStyle={containerStyle}
-          gridAreas={gridAreas}
-        /> */}
-      </Fragment>
+            </div>
+          </EditorLeft>
+          <EditorRight>
+            <Menu
+              previewWidth={previewWidth}
+              previewHeight={previewHeight}
+              width={width}
+              height={height}
+              onClickReset={() => {
+                window.localStorage.clear()
+                this.setState(simpleData)
+              }}
+              onClickHolyGrail={() => {
+                window.localStorage.clear()
+                this.setState(holyGrailData)
+              }}
+              onChangeValue={(key, value) => {
+                window.localStorage.clear()
+                this.setState({ [key]: value })
+              }}
+            />
+          </EditorRight>
+          <EditorOutput>
+            <Output
+              gridState={this.state}
+              containerStyle={containerStyle}
+              gridAreas={gridAreas}
+            />
+          </EditorOutput>
+        </EditorLayout>
+      </Root>
     )
   }
 }

@@ -31,9 +31,9 @@ export default function Menu({
           padding: '15px'
         }}
       >
-        <div>Grid Editor</div>
+        <div>CSS Grid Editor</div>
         <hr />
-        <div>load preset</div>
+        <div>Load preset</div>
         <button
           onClick={_ => {
             onClickReset()
