@@ -22,16 +22,18 @@ export default function Menu({
       style={{
         width: '100%',
         height: '100%',
-        padding: '12px',
-        boxSizing: 'content-box',
         backgroundColor: '#444',
         color: '#ddd'
       }}
     >
-      <h2>GridEditor</h2>
-      <hr />
-      Template
-      <div>
+      <div
+        style={{
+          padding: '15px'
+        }}
+      >
+        <div>Grid Editor</div>
+        <hr />
+        <div>load preset</div>
         <button
           onClick={_ => {
             onClickReset()
@@ -39,8 +41,6 @@ export default function Menu({
         >
           Simple
         </button>
-      </div>
-      <div>
         <button
           onClick={_ => {
             onClickHolyGrail()
@@ -48,38 +48,52 @@ export default function Menu({
         >
           HolyGrail
         </button>
+        <hr />
+        {[
+          {
+            name: 'previewWidth',
+            value: previewWidth
+          },
+          {
+            name: 'previewHeight',
+            value: previewHeight
+          }
+        ].map((el, index) => {
+          return (
+            <div key={index}>
+              {el.name}:
+              <br />
+              <input
+                value={el.value}
+                onChange={ev => onChangeValue(el.name, ev.target.value)}
+              />
+            </div>
+          )
+        })}
+        <hr />
+        <div>Root</div>
+        {[
+          {
+            name: 'width',
+            value: width
+          },
+          {
+            name: 'height',
+            value: height
+          }
+        ].map((el, index) => {
+          return (
+            <div key={index}>
+              {el.name}:
+              <br />
+              <input
+                value={el.value}
+                onChange={ev => onChangeValue(el.name, ev.target.value)}
+              />
+            </div>
+          )
+        })}
       </div>
-      <hr />
-      <span>Container</span>
-      {[
-        {
-          name: 'previewWidth',
-          value: previewWidth
-        },
-        {
-          name: 'previewHeight',
-          value: previewHeight
-        },
-        {
-          name: 'width',
-          value: width
-        },
-        {
-          name: 'height',
-          value: height
-        }
-      ].map((el, index) => {
-        return (
-          <div key={index}>
-            {el.name}:
-            <br />
-            <input
-              value={el.value}
-              onChange={ev => onChangeValue(el.name, ev.target.value)}
-            />
-          </div>
-        )
-      })}
     </div>
   )
 }

@@ -1,7 +1,7 @@
 /* @flow */
 module.exports = {
-  previewWidth: '640px',
-  previewHeight: '480px',
+  previewWidth: '100%',
+  previewHeight: '100%',
   width: '100%',
   height: '100%',
   columns: ['120px', '4fr', '1fr'],
@@ -48,4 +48,3 @@ module.exports = {
   ],
   selectedPaneId: null
 }
-
