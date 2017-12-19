@@ -1,7 +1,7 @@
 /* @flow */
 import styled from 'styled-components'
 
-export const GridEditorLayout = styled.div`
+export default styled.div`
   width: ${({ width }) => width};
   height: ${({ height }) => height};
   display: grid;
@@ -11,28 +11,27 @@ export const GridEditorLayout = styled.div`
     1fr
     30px;
   grid-template-areas:
-    '.   columns addc'
+    '.    columns addc'
     'rows edit    .'
-    'addr .      .';
+    'addr .       .';
 `
 
-export const ColumnsArea = styled.div`
+export const Columns = styled.div`
   grid-area: columns;
 `
 
-export const AddColumnsButtonArea = styled.div`
+export const AddColumnsButton = styled.div`
   grid-area: addc;
 `
 
-export const AddRowsButtonArea = styled.div`
+export const AddRowsButton = styled.div`
   grid-area: addr;
 `
 
-export const RowsArea = styled.div`
+export const Rows = styled.div`
   grid-area: rows;
 `
 
-export const EditArea = styled.div`
+export const Edit = styled.div`
   grid-area: edit;
 `
-

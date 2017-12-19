@@ -6,19 +6,10 @@ import Output from '../atoms/Output'
 import RowsEditor from '../atoms/RowsEditor'
 import ColumnsEditor from '../atoms/ColumnsEditor'
 import Menu from '../molecules/Menu'
-import holyGrailData from '../../domain/presets/holyGrail'
-import simpleData from '../../domain/presets/simple'
 import enhancer from '../hoc/homeEnhancer'
 import { buildPanes, buildGridContainerStyle } from '../../domain/GridState'
-import { AppLayout, AppLeft, AppRight, AppOutput } from '../layouts/AppLayout'
-import {
-  GridEditorLayout,
-  ColumnsArea,
-  RowsArea,
-  EditArea,
-  AddRowsButtonArea,
-  AddColumnsButtonArea
-} from '../layouts/GridEditorLayout'
+import AppLayout, * as AppArea from '../layouts/AppLayout'
+import GridEditorLayout, * as GridEditorArea from '../layouts/GridEditorLayout'
 
 const Root = styled.div`
   width: 100%;
@@ -70,7 +61,7 @@ export default enhancer(props => {
   return (
     <Root>
       <AppLayout>
-        <AppLeft>
+        <AppArea.Left>
           <div
             style={{
               height: '100%',
@@ -86,31 +77,31 @@ export default enhancer(props => {
               }}
             >
               <GridEditorLayout width={width} height={height}>
-                <ColumnsArea>
+                <GridEditorArea.Columns>
                   <ColumnsEditor
                     columns={columns}
                     onChangeColumn={(index, value) => {
                       actions.changeColumnValue(index, value)
                     }}
                   />
-                </ColumnsArea>
-                <RowsArea>
+                </GridEditorArea.Columns>
+                <GridEditorArea.Rows>
                   <RowsEditor
                     rows={rows}
                     onChangeRow={(index, value) => {
                       actions.changeRowValue(index, value)
                     }}
                   />
-                </RowsArea>
-                <AddRowsButtonArea>
+                </GridEditorArea.Rows>
+                <GridEditorArea.AddRowsButton>
                   <button onClick={() => actions.addRow()}>+</button>
                   <button onClick={() => actions.deleteRow()}>-</button>
-                </AddRowsButtonArea>
-                <AddColumnsButtonArea>
+                </GridEditorArea.AddRowsButton>
+                <GridEditorArea.AddColumnsButton>
                   <button onClick={() => actions.addColumn()}>+</button>
                   <button onClick={() => actions.deleteColumn()}>-</button>
-                </AddColumnsButtonArea>
-                <EditArea>
+                </GridEditorArea.AddColumnsButton>
+                <GridEditorArea.Edit>
                   <div style={containerStyle}>
                     {panes.map(pane => {
                       return (
@@ -127,12 +118,12 @@ export default enhancer(props => {
                       )
                     })}
                   </div>
-                </EditArea>
+                </GridEditorArea.Edit>
               </GridEditorLayout>
             </div>
           </div>
-        </AppLeft>
-        <AppRight>
+        </AppArea.Left>
+        <AppArea.Right>
           <Menu
             previewWidth={previewWidth}
             previewHeight={previewHeight}
@@ -146,14 +137,14 @@ export default enhancer(props => {
               actions.updateParam(key, value)
             }}
           />
-        </AppRight>
-        <AppOutput>
+        </AppArea.Right>
+        <AppArea.Output>
           <Output
             gridState={state}
             containerStyle={containerStyle}
             panes={panes}
           />
-        </AppOutput>
+        </AppArea.Output>
       </AppLayout>
     </Root>
   )

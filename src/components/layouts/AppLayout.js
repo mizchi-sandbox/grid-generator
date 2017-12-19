@@ -1,7 +1,7 @@
 /* @flow */
 import styled from 'styled-components'
 
-export const AppLayout = styled.div`
+export default styled.div`
   width: 100%;
   height: 100%;
   display: grid;
@@ -10,15 +10,15 @@ export const AppLayout = styled.div`
   grid-template-areas: 'left right' 'output right';
 `
 
-export const AppLeft = styled.div`
+export const Left = styled.div`
   grid-area: left;
 `
 
-export const AppRight = styled.div`
+export const Right = styled.div`
   grid-area: right;
 `
 
-export const AppOutput = styled.div`
+export const Output = styled.div`
   height: 300px;
   overflow-y: scroll;
   background-color: #333;
