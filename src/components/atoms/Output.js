@@ -1,5 +1,5 @@
 /* @flow */
-import type { GridState } from '../../domain/GridState'
+import type { GridState, Pane } from '../../domain/GridState'
 import React, { Fragment } from 'react'
 import paramCase from 'param-case'
 
@@ -7,7 +7,7 @@ export default class Output extends React.Component<
   {
     gridState: GridState,
     containerStyle: any,
-    gridAreas: string[]
+    panes: Pane[]
   },
   {
     outputMode: 'css' | 'react' | 'internal'
@@ -18,7 +18,7 @@ export default class Output extends React.Component<
   }
 
   render() {
-    const { gridState, containerStyle, gridAreas } = this.props
+    const { gridState, containerStyle, panes } = this.props
     const { outputMode } = this.state
 
     const cssString =
@@ -30,8 +30,10 @@ export default class Output extends React.Component<
         })
         .join('\n') +
       '\n}\n' +
-      gridAreas
-        .map(area => `.area-${area} {\n  grid-area: ${area};\n}`)
+      panes
+        .map(
+          pane => `.area-${pane.gridArea} {\n  grid-area: ${pane.gridArea};\n}`
+        )
         .join('\n')
     return (
       <div style={{ backgroundColor: '#333', color: '#ddd' }}>
@@ -61,9 +63,7 @@ export default class Output extends React.Component<
                 <pre>
                   {`
 <div class='gridContainer'>
-${gridAreas
-                    .map(areaName => `  <div class='area-${areaName}'></div> `)
-                    .join('\n')}
+${panes.map(pane => `  <div class='area-${pane.gridArea}'></div> `).join('\n')}
 </div>`}
                 </pre>
               </div>

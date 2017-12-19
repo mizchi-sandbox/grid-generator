@@ -1,7 +1,6 @@
 /* @flow */
 import type { GridState } from '../../domain/GridState'
 import React from 'react'
-import uniq from 'lodash.uniq'
 import styled from 'styled-components'
 import PaneEditor from '../atoms/PaneEditor'
 import Output from '../atoms/Output'
@@ -10,7 +9,6 @@ import ColumnsEditor from '../atoms/ColumnsEditor'
 import Menu from '../molecules/Menu'
 import holyGrailData from '../../domain/presets/holyGrail'
 import simpleData from '../../domain/presets/simple'
-
 import {
   deleteRow,
   deleteColumn,
@@ -18,76 +16,22 @@ import {
   addColumn,
   cellsToAreas,
   updateCellName,
-  breakPanes
+  breakPanes,
+  buildPanes
 } from '../../domain/GridState'
+import { AppLayout, AppLeft, AppRight, AppOutput } from '../layouts/AppLayout'
+import {
+  GridEditorLayout,
+  ColumnsArea,
+  RowsArea,
+  EditArea,
+  AddRowsButtonArea,
+  AddColumnsButtonArea
+} from '../layouts/GridEditorLayout'
 
-const Root: React.StatelessComponent<{}> = styled.div`
+const Root = styled.div`
   width: 100%;
   height: 100%;
-`
-
-const GridEditorLayout: React.StatelessComponent<{
-  width: number,
-  height: number,
-  children: any
-}> = styled.div`
-  width: ${({ width }) => width};
-  height: ${({ height }) => height};
-  display: grid;
-  grid-template-columns: 60px 1fr 50px;
-  grid-template-rows:
-    30px
-    1fr
-    30px;
-  grid-template-areas:
-    '_0   columns addc'
-    'rows edit    _1'
-    'addr _2      _3';
-`
-
-const ColumnsArea: React.StatelessComponent<{}> = styled.div`
-  grid-area: columns;
-`
-
-const AddColumnsButtonArea: React.StatelessComponent<{}> = styled.div`
-  grid-area: addc;
-`
-
-const AddRowsButtonArea: React.StatelessComponent<{}> = styled.div`
-  grid-area: addr;
-`
-
-const RowsArea: React.StatelessComponent<{}> = styled.div`
-  grid-area: rows;
-`
-
-const EditArea: React.StatelessComponent<{}> = styled.div`
-  grid-area: edit;
-`
-
-const EditorLayout: React.StatelessComponent<{}> = styled.div`
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: 1fr 200px;
-  grid-template-rows: 1fr 300px;
-  grid-template-areas: 'left right' 'output right';
-`
-
-const EditorLeft: React.StatelessComponent<{}> = styled.div`
-  grid-area: left;
-`
-
-const EditorRight: React.StatelessComponent<{}> = styled.div`
-  grid-area: right;
-`
-
-const EditorOutput: React.StatelessComponent<{}> = styled.div`
-  height: 300px;
-  overflow-y: scroll;
-  background-color: #333;
-  color: #ddd;
-  grid-area: output;
 `
 
 const assign = (Object.assign: any)
@@ -159,8 +103,6 @@ export default class Home extends React.Component<{}, GridState> {
       gridTemplateAreas
     }
 
-    const gridAreas = uniq(cells.map(c => c.gridArea))
-
     const realContainerWidth =
       previewWidth.indexOf('%') > -1
         ? previewWidth
@@ -171,10 +113,11 @@ export default class Home extends React.Component<{}, GridState> {
         ? previewHeight
         : addPx(controllerY, previewHeight, controllerY)
 
+    const panes = buildPanes(this.state)
     return (
       <Root>
-        <EditorLayout>
-          <EditorLeft>
+        <AppLayout>
+          <AppLeft>
             <div
               style={{
                 height: '100%',
@@ -228,21 +171,18 @@ export default class Home extends React.Component<{}, GridState> {
                   </AddColumnsButtonArea>
                   <EditArea>
                     <div style={containerStyle}>
-                      {gridAreas.map((gridArea, index) => {
-                        const includedCells = cells.filter(
-                          cell => cell.gridArea === gridArea
-                        )
-                        const { id } = includedCells[0]
+                      {panes.map(pane => {
                         return (
                           <PaneEditor
-                            key={index}
-                            gridArea={gridArea}
-                            cells={includedCells}
+                            key={pane.id}
+                            pane={pane}
                             onSet={value =>
-                              this.setState(s => updateCellName(s, id, value))
+                              this.setState(s =>
+                                updateCellName(s, pane.parentCellId, value)
+                              )
                             }
                             onClickBreak={() => {
-                              this.setState(s => breakPanes(s, gridArea))
+                              this.setState(s => breakPanes(s, pane.gridArea))
                             }}
                           />
                         )
@@ -252,8 +192,8 @@ export default class Home extends React.Component<{}, GridState> {
                 </GridEditorLayout>
               </div>
             </div>
-          </EditorLeft>
-          <EditorRight>
+          </AppLeft>
+          <AppRight>
             <Menu
               previewWidth={previewWidth}
               previewHeight={previewHeight}
@@ -272,15 +212,15 @@ export default class Home extends React.Component<{}, GridState> {
                 this.setState({ [key]: value })
               }}
             />
-          </EditorRight>
-          <EditorOutput>
+          </AppRight>
+          <AppOutput>
             <Output
               gridState={this.state}
               containerStyle={containerStyle}
-              gridAreas={gridAreas}
+              panes={panes}
             />
-          </EditorOutput>
-        </EditorLayout>
+          </AppOutput>
+        </AppLayout>
       </Root>
     )
   }

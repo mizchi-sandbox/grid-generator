@@ -1,12 +1,11 @@
 /* @flow */
-import type { Cell } from '../../domain/GridState'
+import type { Pane } from '../../domain/GridState'
 import React, { Fragment } from 'react'
 import uuid from 'uuid'
 import Centerize from './Centerize'
 
 type Props = {
-  cells: Cell[],
-  gridArea: string,
+  pane: Pane,
   onSet: Function,
   onClickBreak: Function
 }
@@ -16,7 +15,8 @@ type State = {
   editingValue: ?string
 }
 
-export default class Pane extends React.Component<Props, State> {
+export default class PaneEditor extends React.Component<Props, State> {
+  _uid: string
   constructor(props: Props) {
     super(props)
     this.state = {
@@ -27,7 +27,8 @@ export default class Pane extends React.Component<Props, State> {
   }
 
   render() {
-    const { onSet, gridArea, onClickBreak, cells } = this.props
+    const { onSet, onClickBreak, pane: { cells, gridArea } } = this.props
+    // const { cells, gridArea } = this.props.pane
     const { editing, editingValue } = this.state
 
     return (
@@ -72,7 +73,7 @@ export default class Pane extends React.Component<Props, State> {
                     }),
                     () => {
                       setTimeout(() => {
-                        const el = document.querySelector('.' + this._uid)
+                        const el: any = document.querySelector('.' + this._uid)
                         if (el) {
                           el.focus()
                           el.setSelectionRange(0, el.value.length)

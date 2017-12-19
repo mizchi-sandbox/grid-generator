@@ -2,8 +2,21 @@
 import flatten from 'lodash.flatten'
 import chunk from 'lodash.chunk'
 import range from 'lodash.range'
+import uniq from 'lodash.uniq'
 
-export type Cell = { gridArea: string, id: number }
+type ID = number
+
+export type Cell = {
+  id: ID,
+  gridArea: string
+}
+
+export type Pane = {
+  id: ID,
+  gridArea: string,
+  parentCellId: number,
+  cells: Cell[]
+}
 
 export type GridState = {
   previewWidth: string,
@@ -16,6 +29,20 @@ export type GridState = {
   cells: Array<Cell>,
   columnCount: number,
   selectedPaneId: ?string
+}
+
+export const buildPanes = ({ cells }: GridState): Array<Pane> => {
+  const areaNames = uniq(cells.map(c => c.gridArea))
+  return areaNames.map(name => {
+    const includedCells = cells.filter(cell => cell.gridArea === name)
+    const { id } = includedCells[0]
+    return {
+      gridArea: name,
+      id: name + includedCells.map(i => i.id.toString()).join('-'),
+      parentCellId: id,
+      cells: includedCells
+    }
+  })
 }
 
 export const getMinBlankId = (ids: number[]): number => {
