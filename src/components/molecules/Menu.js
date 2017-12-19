@@ -1,21 +1,22 @@
 /* @flow */
 import React from 'react'
+import type { GridState } from '../../domain/GridState'
+import holyGrailData from '../../domain/presets/holyGrail'
+import simpleData from '../../domain/presets/simple'
 export default function Menu({
   previewWidth,
   previewHeight,
   width,
   height,
   onChangeValue,
-  onClickReset,
-  onClickHolyGrail
+  onSelectPreset
 }: {
   previewWidth: string,
   previewHeight: string,
   width: string,
   height: string,
   onChangeValue: (key: string, value: string) => void,
-  onClickReset: () => void,
-  onClickHolyGrail: () => void
+  onSelectPreset: (data: GridState) => void
 }) {
   return (
     <div
@@ -36,14 +37,14 @@ export default function Menu({
         <div>Load preset</div>
         <button
           onClick={_ => {
-            onClickReset()
+            onSelectPreset(simpleData)
           }}
         >
           Simple
         </button>
         <button
           onClick={_ => {
-            onClickHolyGrail()
+            onSelectPreset(holyGrailData)
           }}
         >
           HolyGrail

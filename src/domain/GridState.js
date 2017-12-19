@@ -4,6 +4,8 @@ import chunk from 'lodash.chunk'
 import range from 'lodash.range'
 import uniq from 'lodash.uniq'
 
+const assign = (Object.assign: any)
+
 type ID = number
 
 export type Cell = {
@@ -65,6 +67,34 @@ export function createCell(cells: Cell[]) {
   }
 }
 
+export const changeColumnValue = (
+  state: GridState,
+  index: number,
+  value: string
+) => {
+  const { columns } = state
+  return {
+    ...state,
+    columns: assign([], columns, {
+      [index]: value
+    })
+  }
+}
+
+export const changeRowValue = (
+  state: GridState,
+  index: number,
+  value: string
+) => {
+  const { rows } = state
+  return {
+    ...state,
+    columns: assign([], rows, {
+      [index]: value
+    })
+  }
+}
+
 export const deleteRow = (state: GridState): GridState => {
   const { cells, rows, rowCount, columnCount } = state
   return {
@@ -115,14 +145,8 @@ export const addColumn = (state: GridState): GridState => {
   }
 }
 
-export const cellsToAreas = ({ cells, columnCount }: GridState): string => {
-  return chunk(cells, columnCount)
-    .map(row => row.map(r => r.gridArea).join(' '))
-    .map(s => `'${s}'`)
-    .join(' ')
-}
-
-export const updateCellName = (
+// TODO: Fix to paneId
+export const updatePaneGridArea = (
   state: GridState,
   id: number,
   gridArea: string
@@ -153,5 +177,64 @@ export function breakPanes(state: GridState, gridArea: string): GridState {
         return cell
       }
     })
+  }
+}
+
+// Calc style
+export const buildGridTemplateAreas = (
+  cells: Cell[],
+  columnCount: number
+): string => {
+  return chunk(cells, columnCount)
+    .map(row => row.map(r => r.gridArea).join(' '))
+    .map(s => `'${s}'`)
+    .join(' ')
+}
+
+export const buildGridContainerStyle = ({
+  width,
+  height,
+  columns,
+  rows,
+  cells,
+  columnCount
+}: GridState): any => {
+  const gridTemplateAreas = buildGridTemplateAreas(cells, columnCount)
+  return {
+    width,
+    height,
+    display: 'grid',
+    gridTemplateColumns: columns.join(' '),
+    gridTemplateRows: rows.join(' '),
+    gridTemplateAreas
+  }
+}
+
+export const buildDraggableGridTemplateAreas = (
+  cells: Cell[],
+  columnCount: number
+): string => {
+  return chunk(cells, columnCount)
+    .map(row => row.map(r => r.gridArea).join(' . '))
+    .map(s => `'${s}'`)
+    .join(' ')
+}
+
+export const buildDraggableGridContainerStyle = ({
+  width,
+  height,
+  columns,
+  rows,
+  cells,
+  columnCount
+}: GridState): any => {
+  const gridTemplateAreas = buildDraggableGridTemplateAreas(cells, columnCount)
+  return {
+    width,
+    height,
+    display: 'grid',
+    gridTemplateColumns: columns.join(' 10px '),
+    gridTemplateRows: rows.join(' 8px '),
+    gridTemplateAreas
   }
 }

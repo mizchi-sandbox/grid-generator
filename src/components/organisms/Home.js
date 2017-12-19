@@ -1,5 +1,4 @@
 /* @flow */
-import type { GridState } from '../../domain/GridState'
 import React from 'react'
 import styled from 'styled-components'
 import PaneEditor from '../atoms/PaneEditor'
@@ -9,16 +8,8 @@ import ColumnsEditor from '../atoms/ColumnsEditor'
 import Menu from '../molecules/Menu'
 import holyGrailData from '../../domain/presets/holyGrail'
 import simpleData from '../../domain/presets/simple'
-import {
-  deleteRow,
-  deleteColumn,
-  addRow,
-  addColumn,
-  cellsToAreas,
-  updateCellName,
-  breakPanes,
-  buildPanes
-} from '../../domain/GridState'
+import enhancer from '../hoc/homeEnhancer'
+import { buildPanes, buildGridContainerStyle } from '../../domain/GridState'
 import { AppLayout, AppLeft, AppRight, AppOutput } from '../layouts/AppLayout'
 import {
   GridEditorLayout,
@@ -34,12 +25,6 @@ const Root = styled.div`
   height: 100%;
 `
 
-const assign = (Object.assign: any)
-
-const VERSION = '3'
-const LAST_SAVE_VERSION = 'last-save-version'
-const STATE = 'state'
-
 const controllerX = '60px'
 const controllerY = '30px'
 
@@ -51,177 +36,125 @@ const addPx = (...vals: string[]) => {
   return `${sum}px`
 }
 
-export default class Home extends React.Component<{}, GridState> {
-  state = holyGrailData
+export default enhancer(props => {
+  const state = props.gridState
+  const { actions } = props
+  const {
+    cells,
+    columns,
+    rows,
+    width,
+    height,
+    previewWidth,
+    previewHeight
+  } = state
 
-  componentDidMount() {
-    const lastSaveVersion = window.localStorage.getItem(LAST_SAVE_VERSION)
+  const containerStyle = buildGridContainerStyle(state)
+  console.log('columns', columns)
+  console.log('rows', rows)
+  console.log('gridTemplateAreas')
+  console.log('cells', cells.map(c => c.gridArea))
+  console.log(containerStyle.gridTemplateAreas.replace(/' '/g, "'\n'"))
 
-    if (VERSION !== lastSaveVersion) {
-      window.localStorage.clear()
-      return
-    }
+  const realContainerWidth =
+    previewWidth.indexOf('%') > -1
+      ? previewWidth
+      : addPx(controllerX, previewWidth, controllerX)
 
-    const lastState = window.localStorage.getItem(STATE)
-    if (lastState) {
-      const state = JSON.parse(lastState)
-      this.setState(state)
-      console.log('loaded last state')
-    }
-  }
+  const realContainerHeight =
+    previewHeight.indexOf('%') > -1
+      ? previewHeight
+      : addPx(controllerY, previewHeight, controllerY)
 
-  componentDidUpdate() {
-    window.localStorage.setItem(STATE, JSON.stringify(this.state))
-    window.localStorage.setItem(LAST_SAVE_VERSION, VERSION)
-    console.log('saved')
-  }
-
-  render() {
-    const {
-      cells,
-      columns,
-      rows,
-      width,
-      height,
-      previewWidth,
-      previewHeight
-    } = this.state
-
-    const gridTemplateAreas = cellsToAreas(this.state)
-    console.log('columns', columns)
-    console.log('rows', rows)
-    console.log('gridTemplateAreas')
-    console.log('cells', cells.map(c => c.gridArea))
-    console.log(gridTemplateAreas.replace(/' '/g, "'\n'"))
-
-    const containerStyle = {
-      width,
-      height,
-      display: 'grid',
-      gridTemplateColumns: columns.join(' '),
-      gridTemplateRows: rows.join(' '),
-      gridTemplateAreas
-    }
-
-    const realContainerWidth =
-      previewWidth.indexOf('%') > -1
-        ? previewWidth
-        : addPx(controllerX, previewWidth, controllerX)
-
-    const realContainerHeight =
-      previewHeight.indexOf('%') > -1
-        ? previewHeight
-        : addPx(controllerY, previewHeight, controllerY)
-
-    const panes = buildPanes(this.state)
-    return (
-      <Root>
-        <AppLayout>
-          <AppLeft>
+  const panes = buildPanes(state)
+  return (
+    <Root>
+      <AppLayout>
+        <AppLeft>
+          <div
+            style={{
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
             <div
               style={{
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
+                width: realContainerWidth,
+                height: realContainerHeight
               }}
             >
-              <div
-                style={{
-                  width: realContainerWidth,
-                  height: realContainerHeight
-                }}
-              >
-                <GridEditorLayout width={width} height={height}>
-                  <ColumnsArea>
-                    <ColumnsEditor
-                      columns={columns}
-                      onChangeColumn={(index, value) => {
-                        this.setState({
-                          ...this.state,
-                          columns: assign([], columns, {
-                            [index]: value
-                          })
-                        })
-                      }}
-                    />
-                  </ColumnsArea>
-                  <RowsArea>
-                    <RowsEditor
-                      rows={rows}
-                      onChangeRow={(index, value) => {
-                        this.setState({
-                          ...this.state,
-                          rows: assign([], rows, {
-                            [index]: value
-                          })
-                        })
-                      }}
-                    />
-                  </RowsArea>
-                  <AddRowsButtonArea>
-                    <button onClick={() => this.setState(addRow)}>+</button>
-                    <button onClick={() => this.setState(deleteRow)}>-</button>
-                  </AddRowsButtonArea>
-                  <AddColumnsButtonArea>
-                    <button onClick={() => this.setState(addColumn)}>+</button>
-                    <button onClick={() => this.setState(deleteColumn)}>
-                      -
-                    </button>
-                  </AddColumnsButtonArea>
-                  <EditArea>
-                    <div style={containerStyle}>
-                      {panes.map(pane => {
-                        return (
-                          <PaneEditor
-                            key={pane.id}
-                            pane={pane}
-                            onSet={value =>
-                              this.setState(s =>
-                                updateCellName(s, pane.parentCellId, value)
-                              )
-                            }
-                            onClickBreak={() => {
-                              this.setState(s => breakPanes(s, pane.gridArea))
-                            }}
-                          />
-                        )
-                      })}
-                    </div>
-                  </EditArea>
-                </GridEditorLayout>
-              </div>
+              <GridEditorLayout width={width} height={height}>
+                <ColumnsArea>
+                  <ColumnsEditor
+                    columns={columns}
+                    onChangeColumn={(index, value) => {
+                      actions.changeColumnValue(index, value)
+                    }}
+                  />
+                </ColumnsArea>
+                <RowsArea>
+                  <RowsEditor
+                    rows={rows}
+                    onChangeRow={(index, value) => {
+                      actions.changeRowValue(index, value)
+                    }}
+                  />
+                </RowsArea>
+                <AddRowsButtonArea>
+                  <button onClick={() => actions.addRow()}>+</button>
+                  <button onClick={() => actions.deleteRow()}>-</button>
+                </AddRowsButtonArea>
+                <AddColumnsButtonArea>
+                  <button onClick={() => actions.addColumn()}>+</button>
+                  <button onClick={() => actions.deleteColumn()}>-</button>
+                </AddColumnsButtonArea>
+                <EditArea>
+                  <div style={containerStyle}>
+                    {panes.map(pane => {
+                      return (
+                        <PaneEditor
+                          key={pane.id}
+                          pane={pane}
+                          onSet={value =>
+                            actions.updatePaneGridArea(pane.parentCellId, value)
+                          }
+                          onClickBreak={() => {
+                            actions.breakPanes(pane.gridArea)
+                          }}
+                        />
+                      )
+                    })}
+                  </div>
+                </EditArea>
+              </GridEditorLayout>
             </div>
-          </AppLeft>
-          <AppRight>
-            <Menu
-              previewWidth={previewWidth}
-              previewHeight={previewHeight}
-              width={width}
-              height={height}
-              onClickReset={() => {
-                window.localStorage.clear()
-                this.setState(simpleData)
-              }}
-              onClickHolyGrail={() => {
-                window.localStorage.clear()
-                this.setState(holyGrailData)
-              }}
-              onChangeValue={(key, value) => {
-                window.localStorage.clear()
-                this.setState({ [key]: value })
-              }}
-            />
-          </AppRight>
-          <AppOutput>
-            <Output
-              gridState={this.state}
-              containerStyle={containerStyle}
-              panes={panes}
-            />
-          </AppOutput>
-        </AppLayout>
-      </Root>
-    )
-  }
-}
+          </div>
+        </AppLeft>
+        <AppRight>
+          <Menu
+            previewWidth={previewWidth}
+            previewHeight={previewHeight}
+            width={width}
+            height={height}
+            onSelectPreset={data => {
+              window.localStorage.clear()
+              actions.reset(data)
+            }}
+            onChangeValue={(key, value) => {
+              actions.updateParam(key, value)
+            }}
+          />
+        </AppRight>
+        <AppOutput>
+          <Output
+            gridState={state}
+            containerStyle={containerStyle}
+            panes={panes}
+          />
+        </AppOutput>
+      </AppLayout>
+    </Root>
+  )
+})
