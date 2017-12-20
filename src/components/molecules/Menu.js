@@ -1,23 +1,35 @@
 /* @flow */
+import type { EditMode } from '../../reducers/gridManager'
 import React from 'react'
-import type { GridState } from '../../domain/GridState'
+import type { GridState, Cell } from '../../domain/GridState'
 import holyGrailData from '../../domain/presets/holyGrail'
 import simpleData from '../../domain/presets/simple'
 export default function Menu({
+  cells,
+  editMode,
+  selectedCellId,
   previewWidth,
   previewHeight,
   width,
   height,
   onChangeValue,
-  onSelectPreset
+  onChangeSelectedCell,
+  onSelectPreset,
+  onChangeEditMode
 }: {
+  cells: Cell[],
+  editMode: EditMode,
+  selectedCellId: ?number,
   previewWidth: string,
   previewHeight: string,
   width: string,
   height: string,
   onChangeValue: (key: string, value: string) => void,
+  onChangeSelectedCell: (cellId: number, key: string, value: string) => void,
+  onChangeEditMode: (mode: EditMode) => void,
   onSelectPreset: (data: GridState) => void
 }) {
+  const selectedCell = cells.find(cell => cell.id === selectedCellId)
   return (
     <div
       style={{
@@ -34,22 +46,22 @@ export default function Menu({
       >
         <div>CSS Grid Editor</div>
         <hr />
-        <div>Load preset</div>
-        <button
-          onClick={_ => {
-            onSelectPreset(simpleData)
-          }}
-        >
-          Simple
-        </button>
-        <button
-          onClick={_ => {
-            onSelectPreset(holyGrailData)
-          }}
-        >
-          HolyGrail
-        </button>
-        <hr />
+        <div>EditMode</div>
+        {['panes', 'cells', 'output'].map(mode => {
+          if (mode === editMode) {
+            return <span key={editMode}>{'[' + mode + ']'}</span>
+          }
+          return (
+            <button
+              key={mode}
+              onClick={_ => {
+                onChangeEditMode(mode)
+              }}
+            >
+              {mode}
+            </button>
+          )
+        })}
         {[
           {
             name: 'previewWidth',
@@ -72,28 +84,83 @@ export default function Menu({
           )
         })}
         <hr />
-        <div>Root</div>
-        {[
-          {
-            name: 'width',
-            value: width
-          },
-          {
-            name: 'height',
-            value: height
-          }
-        ].map((el, index) => {
-          return (
-            <div key={index}>
-              {el.name}:
-              <br />
-              <input
-                value={el.value}
-                onChange={ev => onChangeValue(el.name, ev.target.value)}
-              />
-            </div>
-          )
-        })}
+        <div>Load preset</div>
+        <button
+          onClick={_ => {
+            onSelectPreset(simpleData)
+          }}
+        >
+          Simple
+        </button>
+        <button
+          onClick={_ => {
+            onSelectPreset(holyGrailData)
+          }}
+        >
+          HolyGrail
+        </button>
+        <hr />
+        <div>
+          Root
+          {selectedCellId && <span>{' > cell[' + selectedCellId + ']'}</span>}
+        </div>
+        {selectedCell == null ? (
+          [
+            {
+              name: 'width',
+              value: width
+            },
+            {
+              name: 'height',
+              value: height
+            }
+          ].map((el, index) => {
+            return (
+              <div key={index}>
+                {el.name}:
+                <br />
+                <input
+                  value={el.value}
+                  onChange={ev => onChangeValue(el.name, ev.target.value)}
+                />
+              </div>
+            )
+          })
+        ) : (
+          <div>
+            {[
+              {
+                name: 'gridArea',
+                value: selectedCell.gridArea
+              },
+              {
+                name: 'children',
+                value: selectedCell.children
+              },
+              {
+                name: 'hoc',
+                value: 'wip'
+              }
+            ].map((el, index) => {
+              return (
+                <div key={index}>
+                  {el.name}:
+                  <br />
+                  <input
+                    value={el.value}
+                    onChange={ev =>
+                      onChangeSelectedCell(
+                        selectedCellId,
+                        el.name,
+                        ev.target.value
+                      )
+                    }
+                  />
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
     </div>
   )

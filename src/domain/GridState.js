@@ -10,7 +10,8 @@ type ID = number
 
 export type Cell = {
   id: ID,
-  gridArea: string
+  gridArea: string,
+  children: string
 }
 
 export type Pane = {
@@ -63,7 +64,8 @@ export function createCell(cells: Cell[]) {
   const id = getMinBlankId(cells.map(c => c.id))
   return {
     id,
-    gridArea: `g${id}`
+    gridArea: `g${id}`,
+    children: ''
   }
 }
 
@@ -91,6 +93,17 @@ export const changeRowValue = (
     ...state,
     columns: assign([], rows, {
       [index]: value
+    })
+  }
+}
+
+export const updateCell = (state: GridState, cell: Cell) => {
+  const { cells } = state
+  const idx = cells.findIndex(c => c.id === cell.id)
+  return {
+    ...state,
+    cells: assign([], cells, {
+      [idx]: cell
     })
   }
 }
@@ -210,17 +223,17 @@ export const buildGridContainerStyle = ({
   }
 }
 
-export const buildDraggableGridTemplateAreas = (
+export const buildGridTemplateAreasByCells = (
   cells: Cell[],
   columnCount: number
 ): string => {
   return chunk(cells, columnCount)
-    .map(row => row.map(r => r.gridArea).join(' . '))
+    .map(row => row.map(cell => 'g' + cell.id).join(' '))
     .map(s => `'${s}'`)
     .join(' ')
 }
 
-export const buildDraggableGridContainerStyle = ({
+export const buildGridContainerStyleByCells = ({
   width,
   height,
   columns,
@@ -228,13 +241,13 @@ export const buildDraggableGridContainerStyle = ({
   cells,
   columnCount
 }: GridState): any => {
-  const gridTemplateAreas = buildDraggableGridTemplateAreas(cells, columnCount)
+  const gridTemplateAreas = buildGridTemplateAreasByCells(cells, columnCount)
   return {
     width,
     height,
     display: 'grid',
-    gridTemplateColumns: columns.join(' 10px '),
-    gridTemplateRows: rows.join(' 8px '),
+    gridTemplateColumns: columns.join(' '),
+    gridTemplateRows: rows.join(' '),
     gridTemplateAreas
   }
 }

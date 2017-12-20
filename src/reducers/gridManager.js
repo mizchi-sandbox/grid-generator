@@ -1,7 +1,9 @@
 /* @flow */
-import type { GridState } from '../domain/GridState'
+import type { GridState, Cell } from '../domain/GridState'
 import simpleData from '../domain/presets/simple'
 import * as G from '../domain/GridState'
+
+export type EditMode = 'panes' | 'cells' | 'output'
 
 const RESET = 'gridManager/reset'
 const ADD_ROW = 'gridManager/addRow'
@@ -13,6 +15,10 @@ const CHANGE_COLUMN_VALUE = 'gridManager/changeColumnValue'
 const UPDATE_PANE_GRID_AREA = 'gridManager/updatePaneGridArea'
 const BREAK_PANES = 'gridManager/breakPanes'
 const UPDATE_PARAM = 'gridManager/updateParam'
+const CHANGE_EDIT_MODE = 'gridManager/changeEditoMode'
+const SELECT_CELL = 'gridManager/selectCell'
+const UNSELECT_CELL = 'gridManager/unselectCell'
+const UPDATE_CELL = 'gridManager/updateCell'
 
 // Actions
 export function reset(nextState: GridState) {
@@ -90,6 +96,33 @@ export function updateParam(key: string, value: string) {
   }
 }
 
+export function changeEditMode(mode: EditMode) {
+  return {
+    type: CHANGE_EDIT_MODE,
+    payload: mode
+  }
+}
+
+export function selectCell(cellId: number) {
+  return {
+    type: SELECT_CELL,
+    payload: cellId
+  }
+}
+
+export function unselectCell() {
+  return {
+    type: UNSELECT_CELL
+  }
+}
+
+export function updateCell(cell: Cell) {
+  return {
+    type: UPDATE_CELL,
+    payload: cell
+  }
+}
+
 export type Action =
   | $Call<typeof addRow>
   | $Call<typeof addColumn>
@@ -99,44 +132,60 @@ export type Action =
   | $Call<typeof changeRowValue, number, string>
   | $Call<typeof changeColumnValue, number, string>
   | $Call<typeof updatePaneGridArea, number, string>
+  | $Call<typeof changeEditMode, EditMode>
+  | $Call<typeof selectCell, number>
+  | $Call<typeof unselectCell>
+  | $Call<typeof updateCell, Cell>
   | $Call<typeof reset, GridState>
 
 // Reducer
 export type State = {
-  gridState: GridState
+  gridState: GridState,
+  editMode: EditMode,
+  selectedCellId: ?number
 }
 
-const initialState: State = { gridState: simpleData }
+const initialState: State = {
+  gridState: simpleData,
+  editMode: 'panes',
+  selectedCellId: null
+}
 
 export default (state: State = initialState, action: Action): State => {
   switch (action.type) {
     case RESET: {
       return {
+        ...state,
         gridState: action.payload
       }
     }
     case ADD_ROW: {
       return {
+        ...state,
         gridState: G.addRow(state.gridState)
       }
     }
     case DELETE_ROW: {
       return {
+        ...state,
         gridState: G.deleteRow(state.gridState)
       }
     }
     case ADD_COLUMN: {
       return {
+        ...state,
         gridState: G.addColumn(state.gridState)
       }
     }
     case DELETE_COLUMN: {
       return {
+        ...state,
         gridState: G.deleteColumn(state.gridState)
       }
     }
     case CHANGE_ROW_VALUE: {
       return {
+        ...state,
         gridState: G.changeRowValue(
           state.gridState,
           action.payload.index,
@@ -146,6 +195,7 @@ export default (state: State = initialState, action: Action): State => {
     }
     case CHANGE_COLUMN_VALUE: {
       return {
+        ...state,
         gridState: G.changeColumnValue(
           state.gridState,
           action.payload.index,
@@ -155,6 +205,7 @@ export default (state: State = initialState, action: Action): State => {
     }
     case UPDATE_PANE_GRID_AREA: {
       return {
+        ...state,
         gridState: G.updatePaneGridArea(
           state.gridState,
           action.payload.paneId,
@@ -164,15 +215,41 @@ export default (state: State = initialState, action: Action): State => {
     }
     case BREAK_PANES: {
       return {
+        ...state,
         gridState: G.breakPanes(state.gridState, action.payload)
       }
     }
     case UPDATE_PARAM: {
       return {
+        ...state,
         gridState: {
           ...state.gridState,
           [action.payload.key]: action.payload.value
         }
+      }
+    }
+    case CHANGE_EDIT_MODE: {
+      return {
+        ...state,
+        editMode: action.payload
+      }
+    }
+    case SELECT_CELL: {
+      return {
+        ...state,
+        selectedCellId: action.payload
+      }
+    }
+    case UNSELECT_CELL: {
+      return {
+        ...state,
+        selectedCellId: null
+      }
+    }
+    case UPDATE_CELL: {
+      return {
+        ...state,
+        gridState: G.updateCell(state.gridState, action.payload)
       }
     }
     default: {

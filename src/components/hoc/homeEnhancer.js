@@ -1,5 +1,6 @@
 /* @flow */
 import type { GridState } from '../../domain/GridState'
+import type { EditMode } from '../../reducers/gridManager'
 import * as GridManagerActions from '../../reducers/gridManager'
 import type { State as RootState } from '../../reducers'
 import { bindActionCreators } from 'redux'
@@ -9,6 +10,8 @@ import withStateSave from './withSaveState'
 
 type Props = {
   actions: typeof GridManagerActions,
+  editMode: EditMode,
+  selectedCellId: ?number,
   gridState: GridState
 }
 

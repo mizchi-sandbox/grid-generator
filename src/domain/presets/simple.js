@@ -8,6 +8,6 @@ export default {
   rows: ['1fr'],
   rowCount: 1,
   columnCount: 1,
-  cells: [{ id: 0, gridArea: 'g0' }],
+  cells: [{ id: 0, gridArea: 'g0', children: '' }],
   selectedPaneId: null
 }

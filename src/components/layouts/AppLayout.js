@@ -6,8 +6,7 @@ export default styled.div`
   height: 100%;
   display: grid;
   grid-template-columns: 1fr 200px;
-  grid-template-rows: 1fr 300px;
-  grid-template-areas: 'left right' 'output right';
+  grid-template-areas: 'left right';
 `
 
 export const Left = styled.div`
@@ -18,10 +17,10 @@ export const Right = styled.div`
   grid-area: right;
 `
 
-export const Output = styled.div`
-  height: 300px;
-  overflow-y: scroll;
-  background-color: #333;
-  color: #ddd;
-  grid-area: output;
-`
+// export const Output = styled.div`
+//   height: 300px;
+//   overflow-y: scroll;
+//   background-color: #333;
+//   color: #ddd;
+//   grid-area: output;
+// `

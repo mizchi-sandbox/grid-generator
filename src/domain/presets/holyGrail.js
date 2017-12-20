@@ -11,38 +11,47 @@ export default {
   cells: [
     {
       id: 0,
+      children: '',
       gridArea: 'header'
     },
     {
       id: 3,
+      children: '',
       gridArea: 'header'
     },
     {
       id: 6,
+      children: '',
       gridArea: 'header'
     },
     {
       id: 1,
+      children: '',
       gridArea: 'left'
     },
     {
       id: 4,
+      children: '',
       gridArea: 'content'
     },
     {
       id: 7,
+      children: '',
       gridArea: 'right'
     },
     {
       id: 2,
+      children: '',
       gridArea: 'footer'
     },
     {
       id: 5,
+      children: '',
       gridArea: 'footer'
     },
     {
       id: 8,
+      children: '',
       gridArea: 'footer'
     }
   ],

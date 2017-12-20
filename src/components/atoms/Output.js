@@ -36,7 +36,7 @@ export default class Output extends React.Component<
         )
         .join('\n')
     return (
-      <div style={{ backgroundColor: '#333', color: '#ddd' }}>
+      <div style={{ padding: '10px' }}>
         {/* <div>
           OutputMode:
           <button onClick={() => this.setState({ outputMode: 'react' })}>
@@ -51,8 +51,7 @@ export default class Output extends React.Component<
         </div> */}
         {outputMode === 'react' && (
           <Fragment>
-            <h3>React Style Object</h3>
-            <pre>const style = {JSON.stringify(containerStyle, null, 2)}</pre>
+            <pre>const Layout = styled.div`\n{cssString}\n`</pre>
           </Fragment>
         )}
         {outputMode === 'css' && (
@@ -62,7 +61,7 @@ export default class Output extends React.Component<
                 <h3>HTML</h3>
                 <pre>
                   {`
-<div class='gridContainer'>
+<div class='container'>
 ${panes.map(pane => `  <div class='area-${pane.gridArea}'></div> `).join('\n')}
 </div>`}
                 </pre>
@@ -72,7 +71,6 @@ ${panes.map(pane => `  <div class='area-${pane.gridArea}'></div> `).join('\n')}
                 <pre> {cssString} </pre>
               </div>
             </div>
-            <hr />
           </Fragment>
         )}
         {outputMode === 'internal' && (
