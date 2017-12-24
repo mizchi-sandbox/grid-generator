@@ -1,13 +1,14 @@
 /* @flow */
 import * as React from 'react'
 import range from 'lodash.range'
+import StyleLengthInput from './StyleLengthInput'
 
 export default function RowsEditor({
   rows,
-  onChangeRow
+  onChangeRowValue
 }: {
   rows: string[],
-  onChangeRow: (index: number, value: string) => void
+  onChangeRowValue: (index: number, value: string) => void
 }) {
   return (
     <div
@@ -23,11 +24,10 @@ export default function RowsEditor({
       {rows.map((row, index) => {
         return (
           <div key={index} style={{ gridArea: 'r' + index.toString() }}>
-            <input
-              style={{ width: '100%', boxSizing: 'border-box' }}
+            <StyleLengthInput
               value={row}
-              onChange={ev => {
-                onChangeRow(index, ev.target.value)
+              onChangeValidly={value => {
+                onChangeRowValue(index, value)
               }}
             />
           </div>

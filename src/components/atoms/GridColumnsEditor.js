@@ -1,14 +1,17 @@
 /* @flow */
 import * as React from 'react'
 import range from 'lodash.range'
+import StyleLengthInput from './StyleLengthInput'
 
-export default function ColumnsEditor({
-  columns,
-  onChangeColumn
-}: {
+type Props = {
   columns: string[],
-  onChangeColumn: (index: number, value: string) => void
-}) {
+  onChangeColumnValue: (index: number, value: string) => void
+}
+
+export default function GridColumnsEditor({
+  columns,
+  onChangeColumnValue
+}: Props) {
   return (
     <div
       style={{
@@ -25,10 +28,11 @@ export default function ColumnsEditor({
       {columns.map((column, index) => {
         return (
           <div key={index} style={{ gridArea: 'g' + index.toString() }}>
-            <input
-              style={{ width: '100%', boxSizing: 'border-box' }}
+            <StyleLengthInput
               value={column}
-              onChange={ev => onChangeColumn(index, ev.target.value)}
+              onChangeValidly={value => {
+                onChangeColumnValue(index, value)
+              }}
             />
           </div>
         )

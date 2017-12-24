@@ -4,8 +4,8 @@ import styled from 'styled-components'
 import PaneEditor from '../atoms/PaneEditor'
 import CellEditor from '../atoms/CellEditor'
 import Output from '../atoms/Output'
-import RowsEditor from '../atoms/RowsEditor'
-import ColumnsEditor from '../atoms/ColumnsEditor'
+import GridRowsEditor from '../atoms/GridRowsEditor'
+import GridColumnsEditor from '../atoms/GridColumnsEditor'
 import Menu from '../molecules/Menu'
 import enhancer from '../hoc/homeEnhancer'
 import {
@@ -46,9 +46,8 @@ export default enhancer(props => {
   } = state
 
   const containerStyle = buildGridContainerStyle(state)
-  // console.log('columns', columns)
-  // console.log('rows', rows)
-  // console.log('cells', cells.map(c => c.gridArea))
+  console.log('columns', columns)
+  console.log('rows', rows)
   console.log('-- gridTemplateAreas --')
   console.log(containerStyle.gridTemplateAreas.replace(/' '/g, "'\n'"))
 
@@ -84,17 +83,18 @@ export default enhancer(props => {
               >
                 <GridEditorLayout width={width} height={height}>
                   <GridEditorArea.Columns>
-                    <ColumnsEditor
+                    <GridColumnsEditor
                       columns={columns}
-                      onChangeColumn={(index, value) => {
+                      onChangeColumnValue={(index, value) => {
                         actions.changeColumnValue(index, value)
                       }}
                     />
                   </GridEditorArea.Columns>
                   <GridEditorArea.Rows>
-                    <RowsEditor
+                    <GridRowsEditor
                       rows={rows}
-                      onChangeRow={(index, value) => {
+                      onChangeRowValue={(index, value) => {
+                        console.log('changeRowValue', index, value)
                         actions.changeRowValue(index, value)
                       }}
                     />
@@ -188,13 +188,6 @@ export default enhancer(props => {
             }}
           />
         </AppArea.Right>
-        {/* <AppArea.Output>
-          <Output
-            gridState={state}
-            containerStyle={containerStyle}
-            panes={panes}
-          />
-        </AppArea.Output> */}
       </AppLayout>
     </Root>
   )

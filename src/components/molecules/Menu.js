@@ -150,7 +150,7 @@ export default function Menu({
                     value={el.value}
                     onChange={ev =>
                       onChangeSelectedCell(
-                        selectedCellId,
+                        selectedCell.id,
                         el.name,
                         ev.target.value
                       )

@@ -91,7 +91,7 @@ export const changeRowValue = (
   const { rows } = state
   return {
     ...state,
-    columns: assign([], rows, {
+    rows: assign([], rows, {
       [index]: value
     })
   }
