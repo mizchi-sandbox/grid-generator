@@ -44,6 +44,12 @@ export default function Menu({
         }}
       >
         <div>CSS Grid Editor</div>
+        <a
+          style={{ color: '#7af' }}
+          href="https://github.com/mizchi-sandbox/grid-generator"
+        >
+          Github
+        </a>
         <hr />
         <div>EditMode</div>
         {['panes', 'cells', 'output'].map(mode => {

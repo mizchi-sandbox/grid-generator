@@ -12,7 +12,7 @@ export default styled.div`
 
 export const Left = styled.div`
   grid-area: left;
-  overflow-y: scroll;
+  overflow-y: auto;
 `
 
 export const Right = styled.div`
