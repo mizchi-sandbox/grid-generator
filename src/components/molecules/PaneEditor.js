@@ -34,7 +34,7 @@ export default function PaneEditor(props: Props) {
                 <span>{value}</span>
                 {cells.length > 1 && (
                   <div>
-                    <button onClick={() => onClickBreak()}>break</button>
+                    <button onClick={() => onClickBreak()}>unchain</button>
                   </div>
                 )}
               </Fragment>
