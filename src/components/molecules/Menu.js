@@ -105,7 +105,7 @@ export default function Menu({
           HolyGrail
         </button>
         <hr />
-        <div>
+        {/* <div>
           Root
           {selectedCellId && <span>{' > cell[' + selectedCellId + ']'}</span>}
         </div>
@@ -133,7 +133,7 @@ export default function Menu({
           })
         ) : (
           <div>
-            {/* {[
+            {[
               {
                 name: 'gridArea',
                 value: selectedCell.gridArea
@@ -163,10 +163,10 @@ export default function Menu({
                   />
                 </div>
               )
-            })} */}
+            })}
           </div>
-        )}
-        <hr />
+        )} */}
+        {/* <hr /> */}
 
         <h3>Shortcut</h3>
         <dl>
