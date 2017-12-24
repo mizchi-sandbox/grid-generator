@@ -78,7 +78,8 @@ export default enhancer(props => {
                 <CellEditor
                   key={cell.id}
                   cell={cell}
-                  selected={cell.id === selectedCellId}
+                  // selected={cell.id === selectedCellId}
+                  selected={false}
                   onSelect={() => {
                     actions.selectCell(cell.id)
                   }}

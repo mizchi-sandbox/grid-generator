@@ -7,6 +7,7 @@ import { bindActionCreators } from 'redux'
 import { compose, pure, setDisplayName, type HOC } from 'recompose'
 import { connect } from 'react-redux'
 import withStateSave from './withSaveState'
+import withKeyControl from './withKeyControl'
 
 type Props = {
   actions: typeof GridManagerActions,
@@ -24,6 +25,7 @@ const enhancer: HOC<Props, {}> = compose(
   withStateSave,
   setDisplayName('Home'),
   connector,
+  withKeyControl,
   pure
 )
 

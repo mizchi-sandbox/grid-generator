@@ -35,7 +35,7 @@ export type GridState = {
 }
 
 export const buildPanes = ({ cells }: GridState): Array<Pane> => {
-  const areaNames = uniq(cells.map(c => c.gridArea))
+  const areaNames = uniq(cells.map(c => c.gridArea)).filter(c => c !== '.')
   return areaNames.map(name => {
     const includedCells = cells.filter(cell => cell.gridArea === name)
     const { id } = includedCells[0]

@@ -1,6 +1,6 @@
 /* @flow */
 import type { Cell } from '../../domain/GridState'
-import React, { Fragment } from 'react'
+import React from 'react'
 import Centerize from '../atoms/Centerize'
 import EditableText from '../atoms/EditableText'
 
@@ -33,12 +33,7 @@ export default function CellEditor(props: Props) {
           onDetermine={value => onSet(value)}
           initialValue={cell.gridArea}
           render={_ => {
-            return (
-              <Fragment>
-                {cell.gridArea}
-                {cell.children && `[${cell.children}]`}
-              </Fragment>
-            )
+            return cell.gridArea
           }}
         />
       </Centerize>

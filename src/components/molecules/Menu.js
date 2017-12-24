@@ -13,7 +13,6 @@ export default function Menu({
   width,
   height,
   onChangeValue,
-  onChangeSelectedCell,
   onSelectPreset,
   onChangeEditMode
 }: {
@@ -128,7 +127,7 @@ export default function Menu({
           })
         ) : (
           <div>
-            {[
+            {/* {[
               {
                 name: 'gridArea',
                 value: selectedCell.gridArea
@@ -158,9 +157,22 @@ export default function Menu({
                   />
                 </div>
               )
-            })}
+            })} */}
           </div>
         )}
+        <hr />
+
+        <h3>Shortcut</h3>
+        <dl>
+          <dt>Ctrl-1</dt>
+          <dd>Pane Mode</dd>
+          <dt>Ctrl-2</dt>
+          <dd>Cell Mode</dd>
+          <dt>Ctrl-3</dt>
+          <dd>Output Mode</dd>
+          <dt>Shift-Arrow</dt>
+          <dd>Expand/Shrink</dd>
+        </dl>
       </div>
     </div>
   )
