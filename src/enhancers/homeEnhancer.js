@@ -1,8 +1,8 @@
 /* @flow */
-import type { GridState } from '../../domain/GridState'
-import type { EditMode } from '../../reducers/gridManager'
-import * as GridManagerActions from '../../reducers/gridManager'
-import type { State as RootState } from '../../reducers'
+import type { GridState } from '../domain/GridState'
+import type { EditMode } from '../reducers/gridManager'
+import * as GridManagerActions from '../reducers/gridManager'
+import type { State as RootState } from '../reducers'
 import { bindActionCreators } from 'redux'
 import { compose, pure, setDisplayName, type HOC } from 'recompose'
 import { connect } from 'react-redux'

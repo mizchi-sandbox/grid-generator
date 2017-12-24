@@ -16,11 +16,3 @@ export const Left = styled.div`
 export const Right = styled.div`
   grid-area: right;
 `
-
-// export const Output = styled.div`
-//   height: 300px;
-//   overflow-y: scroll;
-//   background-color: #333;
-//   color: #ddd;
-//   grid-area: output;
-// `

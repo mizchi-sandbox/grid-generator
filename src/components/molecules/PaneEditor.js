@@ -1,9 +1,8 @@
 /* @flow */
 import type { Pane } from '../../domain/GridState'
 import React, { Fragment } from 'react'
-import Centerize from './Centerize'
-// import EditableInput from './EditableInput'
-import EditableText from './EditableText'
+import Centerize from '../atoms/Centerize'
+import EditableText from '../atoms/EditableText'
 
 type Props = {
   pane: Pane,

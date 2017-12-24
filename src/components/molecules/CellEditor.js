@@ -1,8 +1,8 @@
 /* @flow */
 import type { Cell } from '../../domain/GridState'
 import React, { Fragment } from 'react'
-import Centerize from './Centerize'
-import EditableText from './EditableText'
+import Centerize from '../atoms/Centerize'
+import EditableText from '../atoms/EditableText'
 
 type Props = {
   cell: Cell,

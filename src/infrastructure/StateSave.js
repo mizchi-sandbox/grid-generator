@@ -1,7 +1,7 @@
 /* @flow */
 import type { State } from '../reducers'
 
-export const VERSION = '6'
+export const VERSION = '7'
 export const LAST_SAVE_VERSION = 'last-save-version'
 export const STATE = 'state'
 

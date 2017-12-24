@@ -1,7 +1,7 @@
 /* @flow */
 import * as React from 'react'
 import range from 'lodash.range'
-import StyleLengthInput from './StyleLengthInput'
+import StyleLengthInput from '../atoms/StyleLengthInput'
 
 export default function RowsEditor({
   rows,

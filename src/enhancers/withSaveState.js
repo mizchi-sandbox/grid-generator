@@ -1,8 +1,8 @@
 /* @flow */
-import type { State as RootState } from '../../reducers'
+import type { State as RootState } from '../reducers'
 import { compose, lifecycle, pure, type HOC } from 'recompose'
 import { connect } from 'react-redux'
-import * as StateSave from '../../infrastructure/StateSave'
+import * as StateSave from '../infrastructure/StateSave'
 
 type Props = RootState
 

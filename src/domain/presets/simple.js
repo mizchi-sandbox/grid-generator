@@ -1,7 +1,7 @@
 /* @flow */
 export default {
-  previewWidth: '640px',
-  previewHeight: '480px',
+  previewWidth: '100%',
+  previewHeight: '100%',
   width: '100%',
   height: '100%',
   columns: ['1fr'],
