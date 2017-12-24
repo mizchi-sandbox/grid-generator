@@ -13,7 +13,7 @@ import {
 import GridEditorLayout, * as GridEditorArea from '../_layouts/GridEditorLayout'
 
 export default enhancer(props => {
-  const { actions, editMode, gridState: state, selectedCellId } = props
+  const { actions, editMode, gridState: state } = props
 
   const { cells, columns, rows, width, height } = state
 
