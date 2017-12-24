@@ -110,6 +110,9 @@ export const updateCell = (state: GridState, cell: Cell) => {
 
 export const deleteRow = (state: GridState): GridState => {
   const { cells, rows, rowCount, columnCount } = state
+  if (rowCount === 1) {
+    return state
+  }
   return {
     ...state,
     rowCount: rowCount - 1,
@@ -120,6 +123,9 @@ export const deleteRow = (state: GridState): GridState => {
 
 export const deleteColumn = (state: GridState): GridState => {
   const { cells, columns, columnCount } = state
+  if (columnCount === 1) {
+    return state
+  }
   return {
     ...state,
     columns: columns.slice(0, columns.length - 1),
